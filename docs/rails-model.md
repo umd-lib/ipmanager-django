@@ -2,11 +2,11 @@
 
 ```mermaid
     erDiagram
-    Groups ||--o{ IPRanges : has
-    Relations o{--|| Groups : subject
-    Relations o{--|| Groups : object
+    Group ||--o{ IPRange : has
+    Relation o{--|| Group : subject
+    Relation o{--|| Group : object
 
-    Groups {
+    Group {
         integer id PK "auto-generated"
         string key UK "mandatory"
         string name UK "mandatory"
@@ -17,14 +17,14 @@
         datetime updated_at "auto-generated, mandatory"
     }
 
-    IPRanges {
+    IPRange {
         integer group_id PK,FK 
         string value PK
         datetime created_at "auto-generated, mandatory"
         datetime updated_at "auto-generated, mandatory"
     }
 
-    Relations {
+    Relation {
         integer subject_id PK, FK
         integer object_id PK, FK
         integer relation "mandatory"
@@ -33,7 +33,12 @@
     }
     
 ```
+
 ## Additional Information
-* All of the datetime fields, such as created_at and updated_at, should have a precision of 6 and they are non-null.
-### Groups
+
+* All of the datetime fields, such as created_at and updated_at, should have a
+    precision of 6 and they are non-null.
+
+### Group
+
 * The key and name fields are indexed, which means that they make it easy for lookup.
