@@ -33,7 +33,6 @@
     }
     
 ```
-
 ## Additional Information
 
 * All of the datetime fields, such as created_at and updated_at, should have a
@@ -42,3 +41,12 @@
 ### Group
 
 * The key and name fields are indexed, which means that they make it easy for lookup.
+
+### IPRange
+
+* The group_id field is indexed.
+* The combination of the group_id and value fields is indexed and unique.
+
+### Relation
+
+* The subject_id and object_id fields are indexed.
