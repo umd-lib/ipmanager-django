@@ -17,7 +17,9 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from ipmanager.api.views import Group_KeyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('groups/<group_key>/', Group_KeyView.as_view())
 ]
