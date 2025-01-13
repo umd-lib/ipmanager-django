@@ -23,6 +23,6 @@ from ipmanager.api.views import GroupsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('groups/<group_key>/', Group_KeyView.as_view())
-    path('groups/', GroupsView.as_view())
+    path('groups/<group_key>/', Group_KeyView.as_view()),
+    path('groups/', GroupsView.as_view()),
 ]
