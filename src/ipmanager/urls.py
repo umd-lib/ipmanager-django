@@ -22,6 +22,6 @@ from ipmanager.api.views import GroupKeyView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('groups/', GroupsView.as_view())
-    path('groups/<group_key>/', GroupKeyView.as_view())
+    path('groups/', GroupsView.as_view()),
+    path('groups/<group_key>/', GroupKeyView.as_view()),
 ]
