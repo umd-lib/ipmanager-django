@@ -17,11 +17,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from ipmanager.api.views import GroupsView
 from ipmanager.api.views import GroupKeyView
+from ipmanager.api.views import GroupsView, APICheckView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('groups/', GroupsView.as_view()),
+    path("check", APICheckView.as_view()),
     path('groups/<group_key>/', GroupKeyView.as_view()),
 ]
