@@ -24,13 +24,14 @@ def test_correct_group_and_ip(client):
   response = client.get("/check", {"group":"A", "ip":"192.168.0.1"}, follow=True)
   assert response.status_code == 200
 
+  response_data = response.json()
   # Checking if the response has the group key and ip_address that was passed 
   # in as query parameter
-  assert response.json()['group']['key']=='A'
-  assert response.json()['ip_address'] =='192.168.0.1'
+  assert response_data['group']['key']=='A'
+  assert response_data['ip_address'] =='192.168.0.1'
 
   # To check if the contained function works as intended
-  assert response.json()["contained"]==True
+  assert response_data["contained"]==True
 
 def test_correct_ip_only(client):
   response = client.get("/check", {"ip":"192.168.0.1"}, follow=True)
