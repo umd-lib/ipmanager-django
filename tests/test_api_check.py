@@ -12,6 +12,8 @@ def test_group_present_ip_absent(client):
 
 def test_unparseable_ip(client):
   response = client.get("/check", {"ip":"192.8888999"}, follow=True)
+  # Checking f-string for unparseable ip_address
+  assert response.json()["detail"]=="The value 192.8888999 you provided in the 'ip' query parameter cannot be parsed as a valid IP address."
   assert response.status_code == 400
 
 def test_group_not_found(client):
