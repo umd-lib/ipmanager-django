@@ -2,13 +2,13 @@ import pytest
 
 def test_valid_response(client):
     response = client.get('/groups/', follow=True)
-    response_keys = response.json().keys()
+    response_data = response.json()
     assert response.status_code == 200
-    assert "@id" in response_keys
-    assert "groups" in response_keys and isinstance(response.json().get("groups"), list)
+    assert "@id" in response_data
+    assert "groups" in response_data and isinstance(response.json().get("groups"), list)
     
     # Testing if the groups key's value is an empty list or a valid list
-    is_empty = "groups" in response_keys and len(response.json()["groups"]) == 0
+    is_empty = "groups" in response_data and len(response.json()["groups"]) == 0
     
     if not is_empty:
         group_keys = response.json()["groups"][0].keys()
