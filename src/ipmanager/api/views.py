@@ -65,7 +65,7 @@ class CheckView(View):
         IPv4Address(ip)
     except AddressValueError:
         return JsonResponse({"title": "Unparseable IP address", 
-                             "detail": "The value 'invalid_ip' you provided in the 'ip' query parameter cannot be " + 
+                             "detail": f"The value {ip} you provided in the 'ip' query parameter cannot be " + 
                                       "parsed as a valid IP address.", 
                              "status": 400}, status=400)
 
