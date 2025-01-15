@@ -7,7 +7,7 @@
     Relation o{--|| Group : object
 
     Group {
-        integer id PK "auto-generated"
+        integer id PK "auto-generated, mandatory"
         string key UK "mandatory"
         string name UK "mandatory"
         string description
@@ -18,15 +18,17 @@
     }
 
     IPRange {
-        integer group_id PK,FK 
-        string value PK
+        integer id PK "auto-generated, mandatory"
+        integer group_id FK "mandatory"
+        string value "mandatory"
         datetime created_at "auto-generated, mandatory"
         datetime updated_at "auto-generated, mandatory"
     }
 
     Relation {
-        integer subject_id PK, FK
-        integer object_id PK, FK
+        integer id PK "auto-generated, mandatory"
+        integer subject_id FK "mandatory"
+        integer object_id FK "mandatory"
         integer relation "mandatory"
         datetime created_at "auto-generated, mandatory"
         datetime updated_at "auto-generated, mandatory"
