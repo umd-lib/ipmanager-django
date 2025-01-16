@@ -21,13 +21,12 @@ class Group(TimeStampedModel):
 def validate_ipv4_or_cidr_address(value):
   try :
     IPv4Network(value)
-    return True
   except ValueError:
-    return False
+    raise ValidationError("IP or cidr address invalid.")
 
 class IPRange(TimeStampedModel):
   group = ForeignKey(Group, on_delete=CASCADE)
-  value = CharField(max_length=64, validators=[validate_ipv4_or_cidr_address])
+  value = CharField(max_length=32, validators=[validate_ipv4_or_cidr_address])
   class Meta:
     constraints = [
       UniqueConstraint(fields=['group', 'value'], name='unique_group_ip_pair')
