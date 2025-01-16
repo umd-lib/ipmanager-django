@@ -97,7 +97,7 @@ def test_missing_subject():
         relation_obj.full_clean()
 
 @pytest.mark.django_db
-def test_same_subject_object_combination():
+def test_same_subject_different_objects_combination():
     # Test for adding two valid subject-object group pairs, where 
     # the subject group is same but object groups are different
     subject_group = Group(key="aABCD-subject", name="valid_subject_Group")
