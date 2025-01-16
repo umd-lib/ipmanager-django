@@ -48,5 +48,5 @@ class Relation(TimeStampedModel):
   relation = IntegerField(choices=RelationType) 
 
   def clean(self):
-    if (self.subject.pk == self.object.pk):
-      return ValidationError("Subject and Object group cannot be the same.")
+    if (self.subject == self.object):
+      raise ValidationError("Subject and Object group cannot be the same.")
