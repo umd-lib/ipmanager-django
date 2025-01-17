@@ -1,22 +1,34 @@
 # Create your views here.
 from django.views import View
 from django.http import JsonResponse
+from django.urls import reverse
 from ipaddress import IPv4Address, AddressValueError
+from .models import Group
+from urllib.parse import urlencode
+
+def contained(ip_address, group_key):
+  return True
+
+def build_group_metadata(request, group):
+    return {
+        "@id": request.build_absolute_uri(reverse("group_key", args=[group.key])),
+        "key": group.key,
+        "name": group.name,
+    }
+
+def build_checks_result(ip_address, group, request):
+    return {
+        "@id": request.build_absolute_uri(reverse("check")) + "?" + urlencode({"group":group.key, "ip":ip_address}),
+        "group":  build_group_metadata(request, group),
+        "ip": ip_address,
+        "contained": contained(ip_address, group.key),
+    } 
 
 class GroupsView(View):
     def get(self, request):
-        # Grab full request URL
         request_url = request.build_absolute_uri()
-        exported_groups = ["Group1Key", "Group2Key", "Group3Key"]
-        groups = []
-
-        # Populate the groups array, where each group is a dict
-        for group_key in exported_groups:
-            groups.append({
-                "@id": request_url + group_key,
-                "key": group_key,
-                "name": group_key + "'s name"
-            })
+        exported_groups = Group.objects.filter(export=True)
+        groups = [build_group_metadata(request, group) for group in exported_groups]
 
         body = {
             "@id": request_url,
@@ -24,37 +36,27 @@ class GroupsView(View):
         }
         return JsonResponse(body)
 
+
 class GroupKeyView(View):
     def get(self, request, group_key):
-        groups = ["key1", "key2", "key3"]
-
-        if (group_key in groups):
-            body = {
-                "@id": request.build_absolute_uri(),
-                "key": group_key,
-                "name": "group " + group_key + "'s name"
-            }
-
-            return JsonResponse(body)
-        
-        else:
+        try:
+            group = Group.objects.get(key=group_key)
+            
+            return JsonResponse(build_group_metadata(request, group))
+        except Group.DoesNotExist:
             body = {
                 "title": "Group not found",
-                "detail": "There is no group with the key " + group_key,
+                "detail": f"There is no group with the key {group_key}",
                 "status": 404
             }
-
+            
             return JsonResponse(body, status=404)
         
 
 class CheckView(View):
-
   def get(self, request):
+    all_groups = Group.objects.all()
 
-    # Made-up data
-    group_keys = ["A", "B", "C", "D"]
-
-    # Returning 400 error if wrong parameters or ip not present
     if 'ip' not in request.GET:
       return JsonResponse({"title": "IP address not provided", 
                            "detail": "IP address was not provided as a query parameter", 
@@ -72,29 +74,15 @@ class CheckView(View):
     if 'group' not in request.GET:
       return JsonResponse({"@id":request.build_absolute_uri(), 
                            "ip":ip,
-                           # Demo-only data, with actual data iterate through all group_keys and make url and parse response accordingly
-                           "checks":[{"@id":"https://ipmanager-test.lib.umd.edu/check?group=Henson00001&ip=127.0.0.1",
-                                      "group":{"@id":"https://ipmanager-test.lib.umd.edu/groups/Henson00001",
-                                               "key":"henson20001","name":"Henson Collection"},
-                                      "ip_address":ip,
-                                      "contained":False}]})
+                           "checks": [build_checks_result(ip, group, request) for group in all_groups],
+                        })
     else:
-      group = request.GET['group']
-      if group in group_keys:
-        return JsonResponse({"@id":request.build_absolute_uri(),
-                            # We probably need to create the group_key url, if not present as field in the model
-                             "group":{"@id":"https://ipmanager-test.lib.umd.edu/groups/henson20001",
-                                      "key":group,
-                                      "name":"Henson Collection"},
-                             "ip_address": ip,
-                             "contained": contained()})
-      else :
+      group_key = request.GET['group']
+      try:
+        db_group = Group.objects.get(key=group_key)
+        return JsonResponse(build_checks_result(ip, db_group, request))
+      except Group.DoesNotExist:
         return JsonResponse({"title": "Group not found", 
-                             "detail": "There is no group with the key 'nonexistent-group'.", 
+                             "detail": f"There is no group with the key {group_key}.", 
                              "status": 404}, status=404)
-      
-# When only IP is present, the we need to create url for each group and check for membership. 
-# For contained, we need to create a function to actually check for membership and return boolean value.
-
-def contained():
-  return True
+   
