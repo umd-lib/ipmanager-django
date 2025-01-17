@@ -17,6 +17,9 @@ class Group(TimeStampedModel):
   description = TextField(blank=True)
   notes = TextField(blank=True)
   export = BooleanField(default=False)
+
+  def __str__(self):
+    return f"{self.name} ({self.key})"
   
 def validate_ipv4_or_cidr_address(value):
   try :
@@ -31,6 +34,10 @@ class IPRange(TimeStampedModel):
     constraints = [
       UniqueConstraint(fields=['group', 'value'], name='unique_group_ip_pair')
     ]   
+  
+  def __str__(self):
+    return f"{self.group}: {self.value}"
+
 
 class Relation(TimeStampedModel):
   class RelationType(IntegerChoices):
@@ -49,3 +56,6 @@ class Relation(TimeStampedModel):
   def clean(self):
     if (self.subject == self.object):
       raise ValidationError("Subject and Object group cannot be the same.")
+  
+  def __str__(self):
+    return f"{self.subject} {"includes" if self.relation == Relation.RelationType.INCLUSION else "excludes"} {self.object}"
