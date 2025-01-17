@@ -40,7 +40,7 @@ def test_correct_group_and_ip(client):
   # Checking if the response has the group key and ip_address that was passed 
   # in as query parameter
   assert response_data['group']['key'] == 'A'
-  assert response_data['ip_address'] == '192.168.0.1'
+  assert response_data['ip'] == '192.168.0.1'
 
   # To check if the contained function works as intended
   assert response_data["contained"] == True

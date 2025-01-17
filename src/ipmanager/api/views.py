@@ -6,18 +6,29 @@ from ipaddress import IPv4Address, AddressValueError
 from .models import Group
 from urllib.parse import urlencode
 
+def contained(ip_address, group_key):
+  return True
+
+def build_group_metadata(request, group):
+    return {
+        "@id": request.build_absolute_uri(reverse("group_key", args=[group.key])),
+        "key": group.key,
+        "name": group.name,
+    }
+
+def build_checks_result(ip_address, group, request):
+    return {
+        "@id": request.build_absolute_uri(reverse("check")) + "?" + urlencode({"group":group.key, "ip":ip_address}),
+        "group":  build_group_metadata(request, group),
+        "ip": ip_address,
+        "contained": contained(ip_address, group.key),
+    } 
+
 class GroupsView(View):
     def get(self, request):
         request_url = request.build_absolute_uri()
         exported_groups = Group.objects.filter(export=True)
-        groups = []
-
-        for group in exported_groups:
-            groups.append({
-                "@id": request.build_absolute_uri(reverse("group_key", args=[group.key])),
-                "key": group.key,
-                "name": group.name,
-            })
+        groups = [build_group_metadata(request, group) for group in exported_groups]
 
         body = {
             "@id": request_url,
@@ -30,15 +41,8 @@ class GroupKeyView(View):
     def get(self, request, group_key):
         try:
             group = Group.objects.get(key=group_key)
-
-            body = {
-                "@id": request.build_absolute_uri(),
-                "key": group_key,
-                "name": group.name
-            }
             
-            return JsonResponse(body)
-            
+            return JsonResponse(build_group_metadata(request, group))
         except Group.DoesNotExist:
             body = {
                 "title": "Group not found",
@@ -51,8 +55,6 @@ class GroupKeyView(View):
 
 class CheckView(View):
   def get(self, request):
-
-    # domain = request.build_absolute_uri('/')
     all_groups = Group.objects.all()
 
     if 'ip' not in request.GET:
@@ -72,34 +74,15 @@ class CheckView(View):
     if 'group' not in request.GET:
       return JsonResponse({"@id":request.build_absolute_uri(), 
                            "ip":ip,
-                           "checks":generateChecksArray(ip, all_groups, request)})
+                           "checks": [build_checks_result(ip, group, request) for group in all_groups],
+                        })
     else:
       group_key = request.GET['group']
       try:
         db_group = Group.objects.get(key=group_key)
-        return JsonResponse({"@id":request.build_absolute_uri(),
-                             "group":{"@id":request.build_absolute_uri(reverse("group_key", args=[group_key])),
-                                      "key":group_key,
-                                      "name":db_group.name},
-                             "ip_address": ip,
-                             "contained": contained(ip, group_key)})
+        return JsonResponse(build_checks_result(ip, db_group, request))
       except Group.DoesNotExist:
         return JsonResponse({"title": "Group not found", 
                              "detail": f"There is no group with the key {group_key}.", 
                              "status": 404}, status=404)
-
-def generateChecksArray(ip_address, all_groups, request):
-    result = []
-    for group in all_groups:
-        single_group = {}
-        single_group["@id"] = request.build_absolute_uri(reverse("check")) + "?" + urlencode({"group":group.key, "ip":ip_address})
-        single_group["@group"] = {"@id":request.build_absolute_uri(reverse("group_key", args=[group.key])),
-                                  "key":group.key,
-                                  "name":group.name}
-        single_group["ip_address"] = ip_address
-        single_group["contained"] = contained(ip_address, group.key)
-        result.append(single_group)
-    return result    
-
-def contained(ip_address, group_key):
-  return True
+   
