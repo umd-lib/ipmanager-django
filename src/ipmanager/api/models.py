@@ -58,4 +58,4 @@ class Relation(TimeStampedModel):
       raise ValidationError("Subject and Object group cannot be the same.")
   
   def __str__(self):
-    return f"{self.subject} {"includes" if self.relation == Relation.RelationType.INCLUSION else "excludes"} {self.object})"
+    return f"{self.subject} {"includes" if self.relation == Relation.RelationType.INCLUSION else "excludes"} {self.object}"
