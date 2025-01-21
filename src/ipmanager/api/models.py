@@ -6,7 +6,7 @@ from ipaddress import IPv4Network
 from django.core.validators import RegexValidator
 import re
 from django.core.exceptions import ValidationError
-from .cidr.cidr import Cidr, CidrSet
+from cidr.cidr import Cidr, CidrSet
 
 class Group(TimeStampedModel):
   key = CharField(
