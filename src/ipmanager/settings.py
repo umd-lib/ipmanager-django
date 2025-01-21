@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+APPLICATION_NAME = 'IP Manager'
 
 # Application definition
 
