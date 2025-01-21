@@ -5,7 +5,8 @@ version = "1.0.0-dev"
 dependencies = [
     "django",
     "django-umd-lib-style",
-    "django-extensions"
+    "django-extensions",
+    "binarytree",
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,3 @@
+[submodule "src/cidr"]
+	path = src/cidr
+	url = git@github.com:wallberg/cidr.git

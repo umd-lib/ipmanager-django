@@ -6,9 +6,6 @@ from ipaddress import IPv4Address, AddressValueError
 from .models import Group
 from urllib.parse import urlencode
 
-def contained(ip_address, group_key):
-  return True
-
 def build_group_metadata(request, group):
     return {
         "@id": request.build_absolute_uri(reverse("group_key", args=[group.key])),
@@ -21,7 +18,7 @@ def build_checks_result(ip_address, group, request):
         "@id": request.build_absolute_uri(reverse("check")) + "?" + urlencode({"group":group.key, "ip":ip_address}),
         "group":  build_group_metadata(request, group),
         "ip": ip_address,
-        "contained": contained(ip_address, group.key),
+        "contained": ip_address in group,
     } 
 
 class GroupsView(View):
