@@ -33,7 +33,7 @@ def test_A_excludes_B():
   relation1 = Relation(subject=group1, object=group2, relation=Relation.RelationType.EXCLUSION)
   relation1.save()
   
-  assert not ip in group1
+  assert ip not in group1
 
 @pytest.mark.django_db
 def test_A_includes_B_B_includes_C():
@@ -218,7 +218,7 @@ def test_excluded_farther_down_chain():
     )
   relation_usmai_not_in_um.save()
 
-  assert not ip in films_group
+  assert ip not in films_group
 
 @pytest.mark.django_db
 def test_exclusion_with_inclusion():
