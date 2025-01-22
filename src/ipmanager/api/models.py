@@ -23,67 +23,30 @@ class Group(TimeStampedModel):
     return f"{self.name} ({self.key})"
 
   def __contains__(self, ip) -> bool:
-    # return (self.ip_ranges_contain(ip) or self.includes(ip)) and not self.excludes(ip)
     return Cidr(ip) in self.collect()
 
   def collect(self) -> CidrSet:
     internal = CidrSet()
 
+    # Adds all IP addresses that directly belong to the current group
+    # to a CidrSet
     for iprange in IPRange.objects.filter(group=self):
       internal.add(Cidr(iprange.value))
 
     included = CidrSet()
     excluded = CidrSet()
 
+    # Adds all addresses to the included set if the relation is INCLUSION
+    # all excluded IP addresses to the excluded setobj
     for relation_obj in Relation.objects.filter(subject=self):
       if relation_obj.relation == Relation.RelationType.INCLUSION:
         included += relation_obj.object.collect()
       else:
         excluded += relation_obj.object.collect()
         
+    # combines group's own ip addresses and all of its included group's ipaddresses
+    # removes any excluded ip addresses from the union above
     return (internal + included) - excluded
-
-  # def traverse(self, relation_type: int, root=None, groups=None):
-  #   root = self
-    
-  #   if groups is None:
-  #     groups = set()
-
-  #   relations_list = Relation.objects.filter(subject=self, relation=relation_type)
-  #   for relation_obj in relations_list:
-  #     group = relation_obj.object
-  #     if group != root and group not in groups:
-  #       groups.add(group)
-  #       groups.update(group.traverse(relation_type, root, groups))
-  #   return groups
-
-  # def excludes(self, ip):
-  #   excluded_groups = self.traverse(Relation.RelationType.EXCLUSION)
-    
-  #   for group in excluded_groups:
-  #     if group.ip_ranges_contain(ip):
-  #       return True
-      
-  #   return False
-  
-  # def includes(self, ip):
-  #   included_groups = self.traverse(Relation.RelationType.INCLUSION)
-    
-  #   for group in included_groups:
-  #     if group.ip_ranges_contain(ip):
-  #       return True
-      
-  #   return False
-
-  # def ip_ranges_contain(self, ip: str) -> bool:
-  #   ip_address = Cidr(ip)
-  #   ip_ranges_cidr = CidrSet()
-  #   ip_ranges = IPRange.objects.filter(group=self)
-    
-  #   for ip_range in ip_ranges:
-  #     ip_ranges_cidr.add(Cidr(ip_range.value))
-      
-  #   return ip_address in ip_ranges_cidr
   
 def validate_ipv4_or_cidr_address(value):
   try :
