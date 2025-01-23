@@ -1,8 +1,16 @@
 # Create your views here.
 from django.views import View
-from django.http import HttpResponse
 from django.shortcuts import render
+from django.views.generic import ListView
+from ipmanager.api.models import Group
 
 class HomeView(View):
   def get(self, request):
     return render(request, "ui/index.html", {})
+
+class GroupListView(ListView):
+ model = Group
+ template_name = 'ui/groupListView.html'
+
+ def get_queryset(self):
+   return Group.objects.all()
