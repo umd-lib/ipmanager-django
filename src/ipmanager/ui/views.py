@@ -11,3 +11,8 @@ class HomeView(View):
 class GroupListView(ListView):
  model = Group
  template_name = 'ui/group_list_view.html'
+
+ def get_context_data(self, **kwargs):
+  context = super().get_context_data(**kwargs)
+  context['title'] = 'All Groups'
+  return context
