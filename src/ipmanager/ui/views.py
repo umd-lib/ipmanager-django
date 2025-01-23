@@ -11,6 +11,3 @@ class HomeView(View):
 class GroupListView(ListView):
  model = Group
  template_name = 'ui/groupListView.html'
-
- def get_queryset(self):
-   return Group.objects.all()
