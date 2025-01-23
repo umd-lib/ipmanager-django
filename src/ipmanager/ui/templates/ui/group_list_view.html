@@ -1,0 +1,34 @@
+{% extends 'ui/base.html' %}
+{% block content %}
+
+{% if group_list %}
+  <table>
+    <thead class="table">
+      <th scope="col">Key</th>
+      <th scope="col">Name</th>
+      <th scope="col">Exported?</th>
+      <th scope="col">Description</th>
+    </thead>
+    <tbody>
+      {% for group in group_list %}
+        <tr>
+          <th scope="row" style="padding-bottom: 5px;"><a href="groups/{{group.key}}">{{ group.key }}</a></th>
+          <td >{{ group.name }}</td>
+          <td class="export_true">
+            {% if group.export %} 
+              {{"Yes"}}
+            {% else %}
+              {{"No"}}
+            {% endif %}
+          </td>
+          <td>{{ group.description }}</td>
+        </tr>
+      {% empty %}
+        <tr> <td>No groups yet. </td></tr>
+      {% endfor %}      
+    </tbody>
+  </table>
+{% else %}
+  <p>No groups found. Please create a group using "New Group".</p>
+{% endif %}
+{% endblock %}
