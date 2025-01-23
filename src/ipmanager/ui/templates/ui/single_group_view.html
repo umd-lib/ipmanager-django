@@ -1,0 +1,76 @@
+{% extends 'ui/base.html' %}
+{% block content %}
+<h1> {{group.key}} </h1>
+
+<h4 style="margin-bottom: 0.5rem;">Group Information</h4>
+<div style="width: 80vw; background-color: rgb(196, 203, 201);">
+<table>
+  <tbody>
+    <tr">
+      <th style="width: 20vw; text-align: left;">Key</th>
+      <td style="width: 80vw;">{{group.key}}</td>
+    </tr>
+    <tr>
+      <th style="width: 20vw; text-align: left;">Name</th>
+      <td>{{group.name}}</td>
+    </tr>
+    <tr>
+      <th style="width: 20vw; text-align: left;">Description</th>
+      <td>{{group.description}}</td>
+    </tr>
+    <tr>
+      <th style="width: 20vw; text-align: left;">Notes</th>
+      <td>{{group.notes}}</td>
+    </tr>
+    <tr>
+      <th style="width: 20vw; text-align: left;">Export</th>
+      {% if group.export %}
+          <td><span class="export_true">Yes</span> - Group is sent to client applications</td>
+      {% else %}
+          <td><span class="export_false">No</span> - Group is used internally, and not sent to client applications</td>
+      {% endif %}
+    </tr>
+  </tbody>
+</table>
+</div>
+<br>
+
+<h4 style="margin-bottom: 0.5rem;">IP Ranges</h4>
+<div>
+<table>
+  <tbody>
+    {% for iprange in ip_ranges %}
+      <tr>
+        <td>{{iprange.value}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<br>
+
+<h4 style="margin-bottom: 0.5rem;">Child Groups</h4>
+<div style="display: flex; ">
+<table style="margin-right: 2rem;">
+  <th>
+    Included Groups
+  </th>
+  {% for inc_groups in included_groups %}
+    <tr><td>{{inc_groups.object.key}} - {{inc_groups.object.name}}</td></tr>
+  {% endfor %}
+</table>
+
+<table style="height: max-content;">
+  <th>
+    Excluded Groups
+  </th>
+  {% for exc_groups in excluded_groups %}
+    <tr><td>{{exc_groups.object.key}} - {{exc_groups.object.name}}</td></tr>
+  {% endfor %}
+</table>
+</div>
+
+<br>
+
+{% endblock %}
