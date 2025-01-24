@@ -34,6 +34,7 @@
 </table>
 </div>
 <br>
+
 <a href='{% url "edit_group" group.pk %}' class="button">Edit Group</a>
 
 <h2>IP Ranges</h2>
@@ -43,11 +44,20 @@
     {% for iprange in ip_ranges %}
       <tr>
         <td>{{iprange.value}}</td>
+        <td>
+          <form method="post" action="{% url 'delete_ip_range' group.key iprange.pk %}"> {% csrf_token %}
+            <button type="submit" class="delete">Delete</button>
+          </form> 
+        </td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
 </div>
+<form method="post" action="{% url 'create_new_ip_range' group.key %}"> {% csrf_token %}
+  {{ ip_range_form }}
+  <button type="submit" class="create">Add IP Range</button>
+</form> 
 
 <br>
 
