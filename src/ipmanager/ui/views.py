@@ -58,6 +58,19 @@ class EditGroupView(UpdateView):
     )
     return context
 
+class CreateGroupView(CreateView):
+  model = Group
+  fields = ['key', 'name', 'description', 'notes', 'export']
+  template_name = 'ui/new_group.html'
+  def get_success_url(self):
+    return reverse('single_group', args=[self.object.key])
+
+class DeleteGroupView(DeleteView):
+  model = Group
+
+  def get_success_url(self):
+    return reverse('list_all_groups')
+
 class CreateRelationView(CreateView):
   form_class = RelationForm
   template_name = 'ui/create_relation_form.html'

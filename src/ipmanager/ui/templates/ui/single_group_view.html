@@ -2,11 +2,15 @@
 {% block content %}
 <h1> {{group.key}} </h1>
 
+<a href='{% url "create_group"%}'>New Group</a>
+<form method="post" action="{% url 'delete_group' group.pk %}">{% csrf_token %}
+  <button type="delete" class="delete">Delete</button>
+</form>
 <h2>Group Information</h2>
 <div>
 <table>
   <tbody>
-    <tr">
+    <tr"> 
       <th>Key</th>
       <td>{{group.key}}</td>
     </tr>
