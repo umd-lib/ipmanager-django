@@ -3,7 +3,7 @@ from django.views import View
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from ipmanager.api.models import Group, IPRange, Relation
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.urls import reverse
 
 class HomeView(View):
@@ -54,3 +54,16 @@ class EditGroupView(UpdateView):
       group = current_group
     )
     return context
+
+class CreateGroupView(CreateView):
+  model = Group
+  fields = ['key', 'name', 'description', 'notes', 'export']
+  template_name = 'ui/new_group.html'
+  def get_success_url(self):
+    return reverse('single_group', args=[self.object.key])
+
+class DeleteGroupView(DeleteView):
+  model = Group
+
+  def get_success_url(self):
+    return reverse('list_all_groups')

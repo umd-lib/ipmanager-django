@@ -18,7 +18,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from ipmanager.api.views import GroupsView, GroupKeyView, CheckView
-from ipmanager.ui.views import HomeView, GroupListView, SingleGroupView, EditGroupView
+from ipmanager.ui.views import HomeView, GroupListView, SingleGroupView, EditGroupView, CreateGroupView, DeleteGroupView
 
 urlpatterns = [
     path('django-admin/', admin.site.urls),
@@ -29,4 +29,6 @@ urlpatterns = [
     path('groups/<group_key>/', GroupKeyView.as_view(), name="group_key"),
     path('admin/groups/<str:key>/', SingleGroupView.as_view(), name="single_group"),
     path('admin/groups/<int:pk>/edit', EditGroupView.as_view(), name="edit_group"),
+    path('admin/groups/create', CreateGroupView.as_view(), name="create_group"),
+    path('admin/groups/<int:pk>/delete', DeleteGroupView.as_view(), name="delete_group"),
 ]
