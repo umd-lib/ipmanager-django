@@ -3,6 +3,8 @@ from django.views import View
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from ipmanager.api.models import Group, IPRange, Relation
+from django.views.generic.edit import UpdateView
+from django.urls import reverse
 
 class HomeView(View):
   def get(self, request):
@@ -35,4 +37,20 @@ class SingleGroupView(DetailView):
     excluded_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.EXCLUSION),
     )
     
+    return context
+
+class EditGroupView(UpdateView):
+ model = Group
+ fields = ['key', 'name', 'description', 'notes', 'export']
+ template_name = 'ui/edit_group.html'
+
+ def get_success_url(self):
+   return reverse('single_group', args=[self.object.key])
+ 
+ def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    current_group = Group.objects.filter(pk=self.object.pk).first()
+    context.update(
+      group = current_group
+    )
     return context
