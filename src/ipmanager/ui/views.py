@@ -32,7 +32,7 @@ class SingleGroupView(DetailView):
     current_group = self.object
 
     context.update(
-      relation_form=RelationForm(initial={'subject' : self.object})
+      relation_form=RelationForm(initial={'subject' : self.object}),
       ip_ranges=IPRange.objects.filter(group=current_group),
       included_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.INCLUSION),
       excluded_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.EXCLUSION),
