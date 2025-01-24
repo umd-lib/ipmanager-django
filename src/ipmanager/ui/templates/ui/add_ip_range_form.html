@@ -5,7 +5,7 @@
 <form method="post">{% csrf_token %}
   {{ form.group }}
   {{ form.value }}
-  <button type="submit" class="edit">Add new IP Range</button>
+  <button type="submit" class="create">Add IP Range</button>
   <a href="{% url 'single_group' group.key %}">Cancel</a>
 </form>
 

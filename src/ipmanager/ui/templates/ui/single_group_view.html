@@ -46,7 +46,7 @@
         <td>{{iprange.value}}</td>
         <td>
           <form method="post" action="{% url 'delete_ip_range' group.key iprange.pk %}"> {% csrf_token %}
-            <button type="delete">Delete</button>
+            <button type="submit" class="delete">Delete</button>
           </form> 
         </td>
       </tr>
@@ -56,7 +56,7 @@
 </div>
 <form method="post" action="{% url 'create_new_ip_range' group.key %}"> {% csrf_token %}
   {{ ip_range_form }}
-  <button type="submit">Add IP Range</button>
+  <button type="submit" class="create">Add IP Range</button>
 </form> 
 
 <br>
