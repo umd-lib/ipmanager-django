@@ -3,8 +3,9 @@ from django.views import View
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from ipmanager.api.models import Group, IPRange, Relation
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView, DeleteView
 from django.urls import reverse
+from ipmanager.ui.forms import RelationForm
 
 class HomeView(View):
   def get(self, request):
@@ -28,7 +29,8 @@ class SingleGroupView(DetailView):
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-
+    form = RelationForm(initial={'subject' : self.object})
+    context['relation_form'] = form
     current_group = self.object
 
     context.update(
@@ -54,3 +56,23 @@ class EditGroupView(UpdateView):
       group = current_group
     )
     return context
+
+class CreateRelationView(CreateView):
+  form_class = RelationForm
+  template_name = 'ui/create_relation_form.html'
+  def get_success_url(self):
+    return reverse('single_group', args=[self.object.subject.key])
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    current_group = Group.objects.filter(key=self.kwargs.get('key')).first()
+    context.update(
+      group = current_group
+    )
+    return context
+  
+class DeleteRelationView(DeleteView):
+  model = Relation
+
+  def get_success_url(self):
+    return reverse('single_group', args=[self.object.subject.key])
