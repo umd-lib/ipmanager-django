@@ -1,0 +1,12 @@
+{% extends 'ui/base.html' %}
+{% block content %}
+
+{{ form.errors }}
+<form method="post">{% csrf_token %}
+  {{ form.group }}
+  {{ form.value }}
+  <button type="submit" class="create">Add IP Range</button>
+  <a href="{% url 'single_group' group.key %}">Cancel</a>
+</form>
+
+{% endblock %}

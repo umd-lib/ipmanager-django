@@ -18,7 +18,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from ipmanager.api.views import GroupsView, GroupKeyView, CheckView
-from ipmanager.ui.views import HomeView, GroupListView, SingleGroupView, EditGroupView, CreateGroupView, DeleteGroupView
+from ipmanager.ui.views import HomeView, GroupListView, SingleGroupView, EditGroupView, CreateGroupView, DeleteGroupView \
+    CreateRelationView, DeleteRelationView, CreateIPRangeView, DeleteIPRangeView
+
 
 urlpatterns = [
     path('django-admin/', admin.site.urls),
@@ -31,4 +33,8 @@ urlpatterns = [
     path('admin/groups/<int:pk>/edit', EditGroupView.as_view(), name="edit_group"),
     path('admin/groups/create', CreateGroupView.as_view(), name="create_group"),
     path('admin/groups/<int:pk>/delete', DeleteGroupView.as_view(), name="delete_group"),
+    path('/admin/groups/<str:key>/relation/create', CreateRelationView.as_view(), name="relation"),
+    path('/admin/groups/<str:key>/relation/<int:pk>/delete', DeleteRelationView.as_view(), name='delete_relation'),
+    path('admin/groups/<str:key>/ip_ranges', CreateIPRangeView.as_view(), name='create_new_ip_range'),
+    path('admin/groups/<str:key>/ip_ranges/<int:pk>/delete', DeleteIPRangeView.as_view(), name='delete_ip_range'),
 ]

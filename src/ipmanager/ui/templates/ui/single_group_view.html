@@ -38,6 +38,7 @@
 </table>
 </div>
 <br>
+
 <a href='{% url "edit_group" group.pk %}' class="button">Edit Group</a>
 
 <h2>IP Ranges</h2>
@@ -47,11 +48,20 @@
     {% for iprange in ip_ranges %}
       <tr>
         <td>{{iprange.value}}</td>
+        <td>
+          <form method="post" action="{% url 'delete_ip_range' group.key iprange.pk %}"> {% csrf_token %}
+            <button type="submit" class="delete">Delete</button>
+          </form> 
+        </td>
       </tr>
     {% endfor %}
   </tbody>
 </table>
 </div>
+<form method="post" action="{% url 'create_new_ip_range' group.key %}"> {% csrf_token %}
+  {{ ip_range_form }}
+  <button type="submit" class="create">Add IP Range</button>
+</form> 
 
 <br>
 
@@ -62,7 +72,11 @@
     Included Groups
   </th>
   {% for inc_groups in included_groups %}
-    <tr><td>{{inc_groups.object.key}} - {{inc_groups.object.name}}</td></tr>
+    <tr><td>{{inc_groups.object.key}} - {{inc_groups.object.name}}
+      <form method="post" action="{% url 'delete_relation' group.key inc_groups.pk %}">{% csrf_token %}
+        <button type="delete">Delete</button>
+      </form>
+    </td> </tr>
   {% endfor %}
 </table>
 
@@ -71,11 +85,18 @@
     Excluded Groups
   </th>
   {% for exc_groups in excluded_groups %}
-    <tr><td>{{exc_groups.object.key}} - {{exc_groups.object.name}}</td></tr>
+    <tr><td>{{exc_groups.object.key}} - {{exc_groups.object.name}}
+      <form method="post" action="{% url 'delete_relation' group.key exc_groups.pk %}">{% csrf_token %}
+        <button type="delete">Delete</button>
+      </form>
+    </td> </tr>
   {% endfor %}
 </table>
 </div>
-
+<form method="post" action="{% url 'relation' group.key %}">{% csrf_token %}
+  {{ relation_form }}
+  <button type="submit" class="create">Add Child Group</button>
+</form>  
 <br>
 
 {% endblock %}
