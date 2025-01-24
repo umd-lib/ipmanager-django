@@ -1,0 +1,5 @@
+{{ form.errors }}
+<form method="get" action="" style="display: flex; align-items: center;">{% csrf_token %}
+  {{form.as_p}}
+  <button type="submit" style="height: 2rem;">Test</button>
+</form>

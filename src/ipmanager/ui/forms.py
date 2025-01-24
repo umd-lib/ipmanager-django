@@ -1,5 +1,6 @@
-from django.forms import ModelForm, HiddenInput
+from django.forms import ModelForm, HiddenInput, Form, CharField
 from ipmanager.api.models import IPRange, Relation
+
 
 class RelationForm(ModelForm):
   class Meta:
@@ -9,7 +10,6 @@ class RelationForm(ModelForm):
       'subject' : HiddenInput(),
     }
 
-
 class IPRangeForm(ModelForm):
   class Meta:
     model = IPRange
@@ -17,3 +17,5 @@ class IPRangeForm(ModelForm):
     widgets = {
       'group': HiddenInput(),
     }
+class TestIPForm(Form):
+    test_ip = CharField(max_length=32)

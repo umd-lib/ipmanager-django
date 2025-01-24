@@ -1,7 +1,7 @@
 {% extends 'ui/base.html' %}
 {% block content %}
 <h1> {{group.key}} </h1>
-
+{% include 'ui/test_ip_form.html' %}
 <a href='{% url "create_group"%}'>New Group</a>
 <form method="post" action="{% url 'delete_group' group.pk %}">{% csrf_token %}
   <button type="delete" class="delete">Delete</button>
@@ -10,7 +10,7 @@
 <div>
 <table>
   <tbody>
-    <tr"> 
+    <tr>
       <th>Key</th>
       <td>{{group.key}}</td>
     </tr>
@@ -34,6 +34,12 @@
           <td><span class="export_false">No</span> - Group is used internally, and not sent to client applications</td>
       {% endif %}
     </tr>
+    {% if test_ip %}
+      <tr>
+        <th>Group Contains IP?</th>
+        <td>{{contained}}</td>
+      </tr>
+    {% endif %}
   </tbody>
 </table>
 </div>
