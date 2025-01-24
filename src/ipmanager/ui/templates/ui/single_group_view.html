@@ -81,7 +81,7 @@
 </div>
 <form method="post" action="{% url 'relation' group.key %}">{% csrf_token %}
   {{ relation_form }}
-  <button type="submit">Add Child Group</button>
+  <button type="submit" class="create">Add Child Group</button>
 </form>  
 <br>
 

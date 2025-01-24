@@ -29,14 +29,13 @@ class SingleGroupView(DetailView):
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    form = RelationForm(initial={'subject' : self.object})
-    context['relation_form'] = form
     current_group = self.object
 
     context.update(
-    ip_ranges=IPRange.objects.filter(group=current_group),
-    included_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.INCLUSION),
-    excluded_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.EXCLUSION),
+      relation_form=RelationForm(initial={'subject' : self.object})
+      ip_ranges=IPRange.objects.filter(group=current_group),
+      included_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.INCLUSION),
+      excluded_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.EXCLUSION),
     )
     
     return context
@@ -65,9 +64,8 @@ class CreateRelationView(CreateView):
 
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
-    current_group = Group.objects.filter(key=self.kwargs.get('key')).first()
     context.update(
-      group = current_group
+      group = Group.objects.filter(key=self.kwargs.get('key')).first()
     )
     return context
   
