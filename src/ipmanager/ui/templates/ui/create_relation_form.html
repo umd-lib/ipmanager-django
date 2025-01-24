@@ -1,0 +1,13 @@
+{% extends 'ui/base.html' %}
+{% block content %}
+
+{{ form.non_field_errors }}
+<form method="post" action="{% url 'relation' group.key %}">{% csrf_token %}
+  {{ form.subject }}
+  {{ form.object }}
+  {{ form.relation }}
+  <button type="submit" class="create">Add Child Group</button>
+  <a href='{% url "single_group" group.key %}'>Cancel</a>
+</form>  
+
+{% endblock %}
