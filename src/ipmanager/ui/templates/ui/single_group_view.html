@@ -1,0 +1,76 @@
+{% extends 'ui/base.html' %}
+{% block content %}
+<h1> {{group.key}} </h1>
+
+<h2>Group Information</h2>
+<div>
+<table>
+  <tbody>
+    <tr">
+      <th>Key</th>
+      <td>{{group.key}}</td>
+    </tr>
+    <tr>
+      <th>Name</th>
+      <td>{{group.name}}</td>
+    </tr>
+    <tr>
+      <th>Description</th>
+      <td>{{group.description}}</td>
+    </tr>
+    <tr>
+      <th>Notes</th>
+      <td>{{group.notes}}</td>
+    </tr>
+    <tr>
+      <th>Export</th>
+      {% if group.export %}
+          <td><span class="export_true">Yes</span> - Group is sent to client applications</td>
+      {% else %}
+          <td><span class="export_false">No</span> - Group is used internally, and not sent to client applications</td>
+      {% endif %}
+    </tr>
+  </tbody>
+</table>
+</div>
+<br>
+
+<h2>IP Ranges</h2>
+<div>
+<table>
+  <tbody>
+    {% for iprange in ip_ranges %}
+      <tr>
+        <td>{{iprange.value}}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+
+<br>
+
+<h2>Child Groups</h2>
+<div>
+<table>
+  <th>
+    Included Groups
+  </th>
+  {% for inc_groups in included_groups %}
+    <tr><td>{{inc_groups.object.key}} - {{inc_groups.object.name}}</td></tr>
+  {% endfor %}
+</table>
+
+<table>
+  <th>
+    Excluded Groups
+  </th>
+  {% for exc_groups in excluded_groups %}
+    <tr><td>{{exc_groups.object.key}} - {{exc_groups.object.name}}</td></tr>
+  {% endfor %}
+</table>
+</div>
+
+<br>
+
+{% endblock %}
