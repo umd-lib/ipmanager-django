@@ -3,20 +3,19 @@ from django.views import View
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from ipmanager.api.models import Group, IPRange, Relation
-from django.urls import reverse
 
 class HomeView(View):
   def get(self, request):
     return render(request, "ui/index.html", {})
 
 class GroupListView(ListView):
- model = Group
- template_name = 'ui/group_list_view.html'
+  model = Group
+  template_name = 'ui/group_list_view.html'
 
- def get_context_data(self, **kwargs):
-  context = super().get_context_data(**kwargs)
-  context['title'] = 'All Groups'
-  return context
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['title'] = 'All Groups'
+    return context
   
 class SingleGroupView(DetailView):
   model = Group
@@ -29,9 +28,11 @@ class SingleGroupView(DetailView):
     context = super().get_context_data(**kwargs)
 
     current_group = self.object
-    
-    context['ip_ranges'] = IPRange.objects.filter(group=current_group)
-    context['included_groups'] = Relation.objects.filter(subject=current_group, relation=Relation.RelationType.INCLUSION)
-    context['excluded_groups'] = Relation.objects.filter(subject=current_group, relation=Relation.RelationType.EXCLUSION)
 
+    context.update(
+    ip_ranges=IPRange.objects.filter(group=current_group),
+    included_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.INCLUSION),
+    excluded_groups=Relation.objects.filter(subject=current_group, relation=Relation.RelationType.EXCLUSION),
+    )
+    
     return context

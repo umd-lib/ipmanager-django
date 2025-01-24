@@ -2,28 +2,28 @@
 {% block content %}
 <h1> {{group.key}} </h1>
 
-<h4 style="margin-bottom: 0.5rem;">Group Information</h4>
-<div style="width: 80vw; background-color: rgb(196, 203, 201);">
+<h2>Group Information</h2>
+<div>
 <table>
   <tbody>
     <tr">
-      <th style="width: 20vw; text-align: left;">Key</th>
-      <td style="width: 80vw;">{{group.key}}</td>
+      <th>Key</th>
+      <td>{{group.key}}</td>
     </tr>
     <tr>
-      <th style="width: 20vw; text-align: left;">Name</th>
+      <th>Name</th>
       <td>{{group.name}}</td>
     </tr>
     <tr>
-      <th style="width: 20vw; text-align: left;">Description</th>
+      <th>Description</th>
       <td>{{group.description}}</td>
     </tr>
     <tr>
-      <th style="width: 20vw; text-align: left;">Notes</th>
+      <th>Notes</th>
       <td>{{group.notes}}</td>
     </tr>
     <tr>
-      <th style="width: 20vw; text-align: left;">Export</th>
+      <th>Export</th>
       {% if group.export %}
           <td><span class="export_true">Yes</span> - Group is sent to client applications</td>
       {% else %}
@@ -35,7 +35,7 @@
 </div>
 <br>
 
-<h4 style="margin-bottom: 0.5rem;">IP Ranges</h4>
+<h2>IP Ranges</h2>
 <div>
 <table>
   <tbody>
@@ -50,9 +50,9 @@
 
 <br>
 
-<h4 style="margin-bottom: 0.5rem;">Child Groups</h4>
-<div style="display: flex; ">
-<table style="margin-right: 2rem;">
+<h2>Child Groups</h2>
+<div>
+<table>
   <th>
     Included Groups
   </th>
@@ -61,7 +61,7 @@
   {% endfor %}
 </table>
 
-<table style="height: max-content;">
+<table>
   <th>
     Excluded Groups
   </th>
