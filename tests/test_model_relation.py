@@ -37,7 +37,7 @@ def test_same_subject_and_object():
         object=Group.objects.get(name='valid_same_group'),
         relation=Relation.RelationType.INCLUSION,
     )
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         relation_obj.full_clean()
 
 
@@ -56,7 +56,7 @@ def test_undefined_relation_type():
         object=Group.objects.get(name='valid_object_Group'),
         relation=3,
     )
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         relation_obj.full_clean()
 
 
@@ -83,7 +83,7 @@ def test_same_subject_object_combination():
         relation=Relation.RelationType.EXCLUSION,
     )
 
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         relation_obj2.full_clean()
 
 
@@ -99,7 +99,7 @@ def test_missing_subject():
         relation=Relation.RelationType.INCLUSION,
     )
 
-    with pytest.raises(Relation.subject.RelatedObjectDoesNotExist) as err:
+    with pytest.raises(Relation.subject.RelatedObjectDoesNotExist):
         relation_obj.full_clean()
 
 

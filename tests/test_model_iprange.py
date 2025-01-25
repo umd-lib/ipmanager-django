@@ -18,7 +18,7 @@ def test_valid_fields():
 def test_no_group():
     iprange = IPRange(value='192.168.1.1')
 
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         iprange.full_clean()
 
 
@@ -28,7 +28,7 @@ def test_no_value():
     group1.save()
     iprange = IPRange(group=Group.objects.get(name='the group'))
 
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         iprange.full_clean()
 
 
@@ -41,7 +41,7 @@ def test_value_too_long():
         value='192.168.134.123123123123123123123',
     )
 
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         iprange.full_clean()
 
 
@@ -51,7 +51,7 @@ def test_value_invalid_ip():
     group1.save()
     iprange = IPRange(group=Group.objects.get(name='the group'), value='192.1')
 
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         iprange.full_clean()
 
 
@@ -63,7 +63,7 @@ def test_group_value_pair_not_unique():
     iprange1.save()
     iprange2 = IPRange(group=Group.objects.get(name='the group'), value='192.168.1.1')
 
-    with pytest.raises(ValidationError) as err:
+    with pytest.raises(ValidationError):
         iprange2.full_clean()
 
 

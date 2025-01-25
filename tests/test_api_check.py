@@ -51,7 +51,7 @@ def test_correct_group_and_ip(client):
     assert response_data['ip'] == '192.168.0.1'
 
     # To check if the contained function works as intended
-    assert response_data['contained'] == True
+    assert response_data['contained'] is True
 
 
 @pytest.mark.django_db
