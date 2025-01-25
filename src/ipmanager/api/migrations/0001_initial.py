@@ -9,20 +9,48 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
             name='Group',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('key', models.CharField(max_length=32, unique=True, validators=[django.core.validators.RegexValidator(flags=re.RegexFlag['IGNORECASE'], regex='\\A[a-z][a-z\\d_-]*\\Z')])),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'created',
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name='created'
+                    ),
+                ),
+                (
+                    'modified',
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name='modified'
+                    ),
+                ),
+                (
+                    'key',
+                    models.CharField(
+                        max_length=32,
+                        unique=True,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                flags=re.RegexFlag['IGNORECASE'],
+                                regex='\\A[a-z][a-z\\d_-]*\\Z',
+                            )
+                        ],
+                    ),
+                ),
                 ('name', models.CharField(max_length=128, unique=True)),
                 ('description', models.TextField(blank=True)),
                 ('notes', models.TextField(blank=True)),
@@ -36,28 +64,101 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='IPRange',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('value', models.CharField(max_length=64, validators=[ipmanager.api.models.validate_ipv4_or_cidr_address])),
-                ('group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.group')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'created',
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name='created'
+                    ),
+                ),
+                (
+                    'modified',
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name='modified'
+                    ),
+                ),
+                (
+                    'value',
+                    models.CharField(
+                        max_length=64,
+                        validators=[ipmanager.api.models.validate_ipv4_or_cidr_address],
+                    ),
+                ),
+                (
+                    'group',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to='api.group'
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('group', 'value'), name='unique_group_ip_pair')],
+                'constraints': [
+                    models.UniqueConstraint(
+                        fields=('group', 'value'), name='unique_group_ip_pair'
+                    )
+                ],
             },
         ),
         migrations.CreateModel(
             name='Relation',
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
-                ('relation', models.IntegerField(choices=[(0, 'Inclusion'), (1, 'Exclusion')])),
-                ('object', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='relation_objects', to='api.group')),
-                ('subject', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='relation_subjects', to='api.group')),
+                (
+                    'id',
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name='ID',
+                    ),
+                ),
+                (
+                    'created',
+                    django_extensions.db.fields.CreationDateTimeField(
+                        auto_now_add=True, verbose_name='created'
+                    ),
+                ),
+                (
+                    'modified',
+                    django_extensions.db.fields.ModificationDateTimeField(
+                        auto_now=True, verbose_name='modified'
+                    ),
+                ),
+                (
+                    'relation',
+                    models.IntegerField(choices=[(0, 'Inclusion'), (1, 'Exclusion')]),
+                ),
+                (
+                    'object',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='relation_objects',
+                        to='api.group',
+                    ),
+                ),
+                (
+                    'subject',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='relation_subjects',
+                        to='api.group',
+                    ),
+                ),
             ],
             options={
-                'constraints': [models.UniqueConstraint(fields=('subject', 'object'), name='unique_subject_object_relation_pair')],
+                'constraints': [
+                    models.UniqueConstraint(
+                        fields=('subject', 'object'),
+                        name='unique_subject_object_relation_pair',
+                    )
+                ],
             },
         ),
     ]
