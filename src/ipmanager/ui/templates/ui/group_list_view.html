@@ -1,6 +1,6 @@
 {% extends 'ui/base.html' %}
 {% block content %}
-
+{% include 'ui/test_ip_form.html' %}
 {% if group_list %}
 <a href='{% url "create_group"%}'>New Group</a>
 
@@ -10,6 +10,9 @@
       <th scope="col">Name</th>
       <th scope="col">Exported?</th>
       <th scope="col">Description</th>
+      {% if test_ip %} 
+      <th scope="col">IP in Group?</th>
+      {% endif %}
     </thead>
     <tbody>
       {% for group in group_list %}
@@ -24,6 +27,9 @@
             {% endif %}
           </td>
           <td>{{ group.description }}</td>
+          {% if test_ip %} 
+            <td>{{group.contained}}</td>
+          {% endif %}
         </tr>
       {% empty %}
         <tr> <td>No groups yet. </td></tr>
