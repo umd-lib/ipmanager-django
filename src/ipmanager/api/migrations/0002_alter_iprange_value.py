@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('api', '0001_initial'),
     ]
@@ -14,6 +13,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='iprange',
             name='value',
-            field=models.CharField(max_length=32, validators=[ipmanager.api.models.validate_ipv4_or_cidr_address]),
+            field=models.CharField(
+                max_length=32,
+                validators=[ipmanager.api.models.validate_ipv4_or_cidr_address],
+            ),
         ),
     ]
