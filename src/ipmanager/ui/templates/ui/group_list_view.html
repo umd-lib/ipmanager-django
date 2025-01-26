@@ -1,8 +1,8 @@
 {% extends 'ui/base.html' %}
 {% block content %}
 {% include 'ui/test_ip_form.html' %}
-{% if group_list %}
 <a href='{% url "create_group"%}'>New Group</a>
+{% if group_list %}
 
   <table>
     <thead class="table">
