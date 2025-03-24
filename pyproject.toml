@@ -6,7 +6,10 @@ dependencies = [
     "django",
     "django-umd-lib-style",
     "django-extensions",
+    "django-environ",
     "binarytree",
+    "djangosaml2",
+    "urlobject"
 ]
 
 [project.optional-dependencies]

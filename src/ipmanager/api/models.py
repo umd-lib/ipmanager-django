@@ -16,7 +16,7 @@ from django.db.models import (
 )
 from django_extensions.db.models import TimeStampedModel
 
-from cidr.cidr import Cidr, CidrSet
+from ipmanager.core.cidr.cidr import Cidr, CidrSet
 
 
 class Group(TimeStampedModel):
