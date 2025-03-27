@@ -15,12 +15,12 @@ class ModifiedSaml2Backend(Saml2Backend):
         assertion_info: dict,
         **kwargs,
     ) -> bool:
-        return 'IPManager-Administrator' in group_names(attributes)
+        return 'ipmanager-administrator' in group_names(attributes)
     
     def _update_user(self, user, attributes: dict, attribute_mapping: dict, force_save: bool = False):
         groups = group_names(attributes)
 
-        if 'IPManager-Administrator' in groups:
+        if 'ipmanager-administrator' in groups:
             user.is_staff = True
             user.is_superuser = True
             user.is_active = True

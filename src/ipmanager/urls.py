@@ -14,17 +14,19 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
 from django.contrib import admin
 from django.urls import include, path
-
 from ipmanager.api.views import CheckView, GroupKeyView, GroupsView
 from ipmanager.ui.views import (CreateGroupView, CreateIPRangeView, CreateRelationView, DeleteGroupView,
                                 DeleteIPRangeView, DeleteRelationView, EditGroupView, GroupListView, HomeView, RootView,
                                 SingleGroupView)
+from djangosaml2.views import AssertionConsumerServiceView, LogoutInitView
 
 urlpatterns = [
     path('', RootView.as_view(), name='site_root'),
+    path('users/auth/saml/callback',
+         AssertionConsumerServiceView.as_view(), name="saml2_acs"),
+    path('users/auth/saml/slo', LogoutInitView.as_view(), name='saml2_logout'),
     path('saml2/', include('djangosaml2.urls')),
     path('home', HomeView.as_view(), name='home_page'),
     path('django-admin', admin.site.urls),
@@ -32,9 +34,10 @@ urlpatterns = [
     path('admin/groups', GroupListView.as_view(), name='list_all_groups'),
     path('check', CheckView.as_view(), name='check'),
     path('groups/<group_key>', GroupKeyView.as_view(), name='group_key'),
-    path('admin/groups/<str:key>', SingleGroupView.as_view(), name='single_group'),
-    path('admin/groups/<int:pk>/edit', EditGroupView.as_view(), name='edit_group'),
     path('admin/groups/create', CreateGroupView.as_view(), name='create_group'),
+    path('admin/groups/<str:key>', SingleGroupView.as_view(), name='single_group'),
+    path('admin/groups/<int:pk>/edit',
+         EditGroupView.as_view(), name='edit_group'),
     path(
         'admin/groups/<int:pk>/delete', DeleteGroupView.as_view(), name='delete_group'
     ),

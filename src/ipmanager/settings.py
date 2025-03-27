@@ -126,7 +126,7 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'ui.auth.ModifiedSaml2Backend'
+    'ipmanager.ui.auth.ModifiedSaml2Backend'
 )
 
 LOGIN_URL = '/saml2/login'
@@ -243,7 +243,7 @@ SAML_CONFIG = {
     # this block states what services we provide
     'service': {
         'sp': {
-            'name': 'IP Manager',
+            'name': 'ipmanager',
             'name_id_format': saml2.saml.NAMEID_FORMAT_TRANSIENT,
             # Define the authentication context
             'requested_authn_context': {
@@ -257,7 +257,7 @@ SAML_CONFIG = {
                 # url and binding to the assertion consumer service view
                 # do not change the binding or service name
                 'assertion_consumer_service': [
-                    (str(BASE_URL.with_path('/saml2/acs/')), saml2.BINDING_HTTP_POST),
+                    (str(BASE_URL.with_path('/users/auth/saml/callback')), saml2.BINDING_HTTP_POST),
                 ],
                 # url and binding to the single logout service view
                 # do not change the binding or service name
@@ -267,8 +267,8 @@ SAML_CONFIG = {
                     (str(BASE_URL.with_path('/saml2/ls/post/')), saml2.BINDING_HTTP_POST),
                 ],
             },
-            'signing_algorithm': saml2.xmldsig.SIG_RSA_SHA256,
-            'digest_algorithm': saml2.xmldsig.DIGEST_SHA256,
+            'signing_algorithm': saml2.xmldsig.SIG_RSA_SHA1,
+            'digest_algorithm': saml2.xmldsig.DIGEST_SHA1,
 
             # Mandates that the identity provider MUST authenticate the
             # presenter directly rather than rely on a previous security context.
@@ -278,7 +278,7 @@ SAML_CONFIG = {
             'name_id_format_allow_create': False,
 
             # attributes that this project need to identify a user
-            'required_attributes': ['givenName', 'sn', 'mail', 'eduPersonEntitlement'],
+            'required_attributes': ['mail', 'eduPersonEntitlement'],
 
             # attributes that may be useful to have but not required
             'optional_attributes': [],
@@ -289,14 +289,14 @@ SAML_CONFIG = {
             # Indicates that Authentication Responses to this SP must
             # be signed. If set to True, the SP will not consume
             # any SAML Responses that are not signed.
-            'want_assertions_signed': False,
+            'want_assertions_signed': True,
 
             'only_use_keys_in_metadata': True,
 
             # When set to true, the SP will consume unsolicited SAML
             # Responses, i.e. SAML Responses for which it has not sent
             # a respective SAML Authentication Request.
-            'allow_unsolicited': False,
+            'allow_unsolicited': True,
 
             # in this section the list of IdPs we talk to are defined
             # This is not mandatory! All the IdP available in the metadata will be considered instead.
@@ -308,7 +308,7 @@ SAML_CONFIG = {
                 # the keys of this dictionary are entity ids
                 'https://shib.idm.umd.edu/shibboleth-idp/shibboleth': {
                     'single_sign_on_service': {
-                        saml2.BINDING_HTTP_POST: 'https://shib.idm.umd.edu/shibboleth-idp/profile/SAML2/POST/SSO',
+                        saml2.BINDING_HTTP_REDIRECT: 'https://shib.idm.umd.edu/shibboleth-idp/profile/SAML2/Redirect/SSO',
                     },
                     'single_logout_service': {
                         saml2.BINDING_HTTP_REDIRECT: 'https://shib.idm.umd.edu/shibboleth-idp/profile/Logout',
@@ -319,7 +319,7 @@ SAML_CONFIG = {
     },
 
     # where the remote metadata is stored, local, remote, or mdq server.
-    # One metadata stor or many...
+    # One metadata store or many...
     'metadata': {
         'remote': [
             {'url': 'https://shib.idm.umd.edu/shibboleth-idp/shibboleth'},
