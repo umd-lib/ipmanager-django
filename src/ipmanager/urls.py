@@ -24,13 +24,17 @@ from djangosaml2.views import AssertionConsumerServiceView, LogoutInitView
 
 urlpatterns = [
     path('', RootView.as_view(), name='site_root'),
+    # --- For the following 2 SAML routes, we are adding them
+    # manually because the existing DIT SAML setup is not configured
+    # to use the routes that djangosaml2 adds by default. These will
+    # override the routes included by djangosaml2.urls
     path('users/auth/saml/callback',
          AssertionConsumerServiceView.as_view(), name="saml2_acs"),
     path('users/auth/saml/slo', LogoutInitView.as_view(), name='saml2_logout'),
     path('saml2/', include('djangosaml2.urls')),
     path('home', HomeView.as_view(), name='home_page'),
     path('django-admin', admin.site.urls),
-    path('groups', GroupsView.as_view(), name='groups'),
+    path('groups/', GroupsView.as_view(), name='groups'),
     path('admin/groups', GroupListView.as_view(), name='list_all_groups'),
     path('check', CheckView.as_view(), name='check'),
     path('groups/<group_key>', GroupKeyView.as_view(), name='group_key'),
