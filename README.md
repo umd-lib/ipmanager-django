@@ -6,7 +6,9 @@ API interface for IP lookups.
 
 ## Development Setup
 
-Please 
+Please see [DevelopmentEnvironmentLocal](docs/DevelopmentEnvironmentLocal.md) for 
+a full tutorial on how to set up this application (including SAML) to run
+on your local machine.
 
 To run the webapp using the built-in web server:
 
