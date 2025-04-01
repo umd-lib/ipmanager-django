@@ -12,20 +12,52 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+import saml2.saml
+import saml2.xmldsig
+from django.core.management.commands.runserver import Command as runserver
+from django.core.management.utils import get_random_secret_key
+from environ import Env
+from urlobject import URLObject
 
+from socket import gethostname, gethostbyname
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+STATIC_ROOT = str(BASE_DIR / 'staticfiles')
+
+# Take environment variables from the .env file
+Env.read_env(BASE_DIR / '.env')
+env = Env()
+
+BASE_URL = URLObject(env.str('BASE_URL', 'http://localhost:5000'))
+CSRF_TRUSTED_ORIGINS = [str(BASE_URL.with_path(''))]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-7*en=!!_rrub1&-!d4pqxs=6@h2n=g5de^3v$olt0s=&xhj4f*'
+SECRET_KEY = env('SECRET_KEY', default=get_random_secret_key())
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool('DEBUG', False)
 
-ALLOWED_HOSTS = []
+SERVER_HOST = env.str('SERVER_HOST', '0.0.0.0')
+SERVER_PORT = env.str('SERVER_PORT', '3001')
+runserver.default_addr = SERVER_HOST
+runserver.default_port = SERVER_PORT
+
+DOMAIN_NAME = env.str('DOMAIN_NAME', 'ipmanager-local')
+
+ALLOWED_HOSTS = [BASE_URL.hostname, '0.0.0.0']
+
+# Add the IP address (used by k8s health probes)
+try:
+    hostname = gethostbyname(gethostname())
+    ALLOWED_HOSTS.append(hostname)
+except OSError:
+    # ignore if we can't get the IP address
+    pass
 
 APPLICATION_NAME = 'IP Manager'
 
@@ -34,6 +66,7 @@ APPLICATION_NAME = 'IP Manager'
 INSTALLED_APPS = [
     'ipmanager.api',
     'ipmanager.ui',
+    'ipmanager.core',
     'umd_lib_style',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +74,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djangosaml2'
 ]
 
 MIDDLEWARE = [
@@ -51,6 +85,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'djangosaml2.middleware.SamlSessionMiddleware'
 ]
 
 ROOT_URLCONF = 'ipmanager.urls'
@@ -80,11 +115,23 @@ WSGI_APPLICATION = 'ipmanager.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': env.str('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': env.str('DB_NAME', BASE_DIR / 'db.sqlite3'),
+        'USER': env.str('DB_USER', ''),
+        'PASSWORD': env.str('DB_PASSWORD', ''),
+        'HOST': env.str('DB_HOST', ''),
+        'PORT': env.str('DB_PORT', ''),
     }
 }
 
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'ipmanager.ui.auth.ModifiedSaml2Backend'
+)
+
+LOGIN_URL = '/saml2/login'
+LOGIN_REDIRECT_URL = '/admin/groups'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -109,13 +156,41 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'America/New_York'
-
 USE_I18N = True
-
 USE_TZ = True
 
+LOGGING = {
+    'version': 1,  # the dictConfig format version
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'formatters': {
+        'verbose': {
+            'format': '{name} {levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': env.str('LOGGING_LEVEL', 'INFO'),
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': env.str('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -126,3 +201,140 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# SAML SETUP -----------------
+
+SAML_SESSION_COOKIE_NAME = 'saml_session'
+SAML_SESSION_COOKIE_SAMESITE = env('SAML_SESSION_COOKIE_SAMESITE', default='None')
+SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=True)
+
+# Handling Post-Login Redirects
+print(ALLOWED_HOSTS)
+SAML_ALLOWED_HOSTS = env('SAML_ALLOWED_HOSTS', cast=[str], default=ALLOWED_HOSTS)
+
+SAML_DEFAULT_BINDING = saml2.BINDING_HTTP_POST
+SAML_LOGOUT_REQUEST_PREFERRED_BINDING = saml2.BINDING_HTTP_POST
+SAML_IGNORE_LOGOUT_ERRORS = True
+
+SAML_CREATE_UNKNOWN_USER = True
+SAML_ATTRIBUTE_MAPPING = {
+    'uid': ('username',),
+    'mail': ('email',),
+    'givenName': ('first_name',),
+    'urn:mace:umd.edu:sn': ('last_name',),
+}
+SAML_KEY_FILE = env('SAML_KEY_FILE', default='/etc/ipmanager/saml/key.pem')
+SAML_CERT_FILE = env('SAML_CERT_FILE', default='/etc/ipmanager/saml/cert.pem')
+
+SAML_CONFIG = {
+    # full path to the xmlsec1 binary program
+    'xmlsec_binary': env('XMLSEC1_PATH', default='/usr/bin/xmlsec1'),
+
+    # your entity id, usually your subdomain plus the url to the metadata view
+    'entityid': str(BASE_URL.netloc),
+
+    # directory with attribute mapping
+    'attribute_map_dir': str(BASE_DIR / 'attribute-maps'),
+
+    # Permits to have attributes not configured in attribute-mappings
+    # otherwise...without OID will be rejected
+    'allow_unknown_attributes': True,
+
+    # this block states what services we provide
+    'service': {
+        'sp': {
+            'name': 'ipmanager',
+            'name_id_format': saml2.saml.NAMEID_FORMAT_TRANSIENT,
+            # Define the authentication context
+            'requested_authn_context': {
+                'authn_context_class_ref': [
+                    'urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport',
+                    'urn:oasis:names:tc:SAML:2.0:ac:classes:TLSClient',
+                ],
+                'comparison': 'minimum',
+            },
+            'endpoints': {
+                # url and binding to the assertion consumer service view
+                # do not change the binding or service name
+                'assertion_consumer_service': [
+                    (str(BASE_URL.with_path('/users/auth/saml/callback')), saml2.BINDING_HTTP_POST),
+                ],
+                # url and binding to the single logout service view
+                # do not change the binding or service name
+                'single_logout_service': [
+                    # Disable next two lines for HTTP_REDIRECT for IDPs that only support HTTP_POST. Ex. Okta:
+                    (str(BASE_URL.with_path('/saml2/ls/')), saml2.BINDING_HTTP_REDIRECT),
+                    (str(BASE_URL.with_path('/saml2/ls/post/')), saml2.BINDING_HTTP_POST),
+                ],
+            },
+            'signing_algorithm': saml2.xmldsig.SIG_RSA_SHA1,
+            'digest_algorithm': saml2.xmldsig.DIGEST_SHA1,
+
+            # Mandates that the identity provider MUST authenticate the
+            # presenter directly rather than rely on a previous security context.
+            'force_authn': False,
+
+            # Enable AllowCreate in NameIDPolicy.
+            'name_id_format_allow_create': False,
+
+            # attributes that this project need to identify a user
+            'required_attributes': ['mail', 'eduPersonEntitlement'],
+
+            # attributes that may be useful to have but not required
+            'optional_attributes': [],
+
+            'want_response_signed': False,
+            'authn_requests_signed': True,
+            'logout_requests_signed': True,
+            # Indicates that Authentication Responses to this SP must
+            # be signed. If set to True, the SP will not consume
+            # any SAML Responses that are not signed.
+            'want_assertions_signed': True,
+
+            'only_use_keys_in_metadata': True,
+
+            # When set to true, the SP will consume unsolicited SAML
+            # Responses, i.e. SAML Responses for which it has not sent
+            # a respective SAML Authentication Request.
+            'allow_unsolicited': True,
+
+            # in this section the list of IdPs we talk to are defined
+            # This is not mandatory! All the IdP available in the metadata will be considered instead.
+            'idp': {
+                # we do not need a WAYF service since there is
+                # only an IdP defined here. This IdP should be
+                # present in our metadata
+
+                # the keys of this dictionary are entity ids
+                'https://shib.idm.umd.edu/shibboleth-idp/shibboleth': {
+                    'single_sign_on_service': {
+                        saml2.BINDING_HTTP_REDIRECT: 'https://shib.idm.umd.edu/shibboleth-idp/profile/SAML2/Redirect/SSO',
+                    },
+                    'single_logout_service': {
+                        saml2.BINDING_HTTP_REDIRECT: 'https://shib.idm.umd.edu/shibboleth-idp/profile/Logout',
+                    },
+                },
+            },
+        }
+    },
+
+    # where the remote metadata is stored, local, remote, or mdq server.
+    # One metadata store or many...
+    'metadata': {
+        'remote': [
+            {'url': 'https://shib.idm.umd.edu/shibboleth-idp/shibboleth'},
+        ],
+    },
+
+    'debug': 1,
+
+    # Signing
+    'key_file': SAML_KEY_FILE,
+    'cert_file': SAML_CERT_FILE,
+
+    # Encryption
+    'encryption_keypairs': [{
+        'key_file': SAML_KEY_FILE,
+        'cert_file': SAML_CERT_FILE,
+    }],
+}

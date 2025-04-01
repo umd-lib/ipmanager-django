@@ -6,13 +6,9 @@ API interface for IP lookups.
 
 ## Development Setup
 
-```zsh
-git clone git@github.com:umd-lib/ipmanager-django.git
-cd ipmanager-django
-python -m venv --prompt "ipmanager-django-py$(cat .python-version)" .venv
-source .venv/bin/activate
-pip install -e '.[test]'
-```
+Please see [DevelopmentEnvironmentLocal](docs/DevelopmentEnvironmentLocal.md) for 
+a full tutorial on how to set up this application (including SAML) to run
+on your local machine.
 
 To run the webapp using the built-in web server:
 
@@ -20,7 +16,7 @@ To run the webapp using the built-in web server:
 src/manage.py runserver
 ```
 
-The application will be running at <http://localhost:8000/>
+The application will be running at <http://localhost:3001/>
 
 To use an alternate port, specify it after the `runserver` command:
 

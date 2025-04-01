@@ -1,19 +1,31 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ipmanager.api.models import Group, IPRange, Relation
 from ipmanager.ui.forms import IPRangeForm, RelationForm, TestIPForm
 
+class RootView(TemplateView):
+    template_name = 'ui/login_required.html'
 
-class HomeView(View):
+    def get(self, request, *args, **kwargs):
+        """If the user is already logged in, send them to the home page.
+        Otherwise, display the "Login Required" page."""
+
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('home_page'))
+        else:
+            return super().get(request, *args, **kwargs)
+
+class HomeView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'ui/index.html', {})
 
-
-class GroupListView(ListView):
+class GroupListView(LoginRequiredMixin, ListView):
     model = Group
     template_name = 'ui/group_list_view.html'
 
@@ -35,7 +47,7 @@ class GroupListView(ListView):
         return context
 
 
-class SingleGroupView(DetailView):
+class SingleGroupView(LoginRequiredMixin, DetailView):
     model = Group
     template_name = 'ui/single_group_view.html'
 
@@ -69,7 +81,7 @@ class SingleGroupView(DetailView):
         return context
 
 
-class EditGroupView(UpdateView):
+class EditGroupView(LoginRequiredMixin, UpdateView):
     model = Group
     fields = ['key', 'name', 'description', 'notes', 'export']
     template_name = 'ui/edit_group.html'
@@ -84,7 +96,7 @@ class EditGroupView(UpdateView):
         return context
 
 
-class CreateGroupView(CreateView):
+class CreateGroupView(LoginRequiredMixin, CreateView):
     model = Group
     fields = ['key', 'name', 'description', 'notes', 'export']
     template_name = 'ui/new_group.html'
@@ -93,14 +105,14 @@ class CreateGroupView(CreateView):
         return reverse('single_group', args=[self.object.key])
 
 
-class DeleteGroupView(DeleteView):
+class DeleteGroupView(LoginRequiredMixin, DeleteView):
     model = Group
 
     def get_success_url(self):
         return reverse('list_all_groups')
 
 
-class CreateRelationView(CreateView):
+class CreateRelationView(LoginRequiredMixin, CreateView):
     form_class = RelationForm
     template_name = 'ui/create_relation_form.html'
 
@@ -113,14 +125,14 @@ class CreateRelationView(CreateView):
         return context
 
 
-class DeleteRelationView(DeleteView):
+class DeleteRelationView(LoginRequiredMixin, DeleteView):
     model = Relation
 
     def get_success_url(self):
         return reverse('single_group', args=[self.object.subject.key])
 
 
-class CreateIPRangeView(CreateView):
+class CreateIPRangeView(LoginRequiredMixin, CreateView):
     form_class = IPRangeForm
     template_name = 'ui/add_ip_range_form.html'
 
@@ -134,7 +146,7 @@ class CreateIPRangeView(CreateView):
         return context
 
 
-class DeleteIPRangeView(DeleteView):
+class DeleteIPRangeView(LoginRequiredMixin, DeleteView):
     model = IPRange
 
     def get_success_url(self):
