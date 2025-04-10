@@ -1,23 +1,23 @@
 {% extends 'ui/base.html' %}
 {% block content %}
 {% include 'ui/test_ip_form.html' %}
-<a href='{% url "create_group"%}'>New Group</a>
+<a class="button create" style="margin-bottom: .5em; margin-top: 1em" href='{% url "create_group"%}'>New Group</a>
 {% if group_list %}
 
   <table>
-    <thead class="table">
-      <th scope="col">Key</th>
-      <th scope="col">Name</th>
-      <th scope="col">Exported?</th>
-      <th scope="col">Description</th>
+    <thead>
+      <th>Key</th>
+      <th>Name</th>
+      <th>Exported?</th>
+      <th>Description</th>
       {% if test_ip %} 
-      <th scope="col">IP in Group?</th>
+      <th>IP in Group?</th>
       {% endif %}
     </thead>
     <tbody>
       {% for group in group_list %}
         <tr>
-          <th scope="row" style="padding-bottom: 5px;"><a href='{% url "single_group" group.key %}'>{{ group.key }}</a></th>
+          <th><a href='{% url "single_group" group.key %}'>{{ group.key }}</a></th>
           <td >{{ group.name }}</td>
           <td class="export_true">
             {% if group.export %} 

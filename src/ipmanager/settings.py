@@ -60,6 +60,8 @@ except OSError:
     pass
 
 APPLICATION_NAME = 'IP Manager'
+NAVIGATION_LINKS = 'ipmanager.urls.get_navigation_links'
+ENVIRONMENT = env.str('ENVIRONMENT', 'development')
 
 # Application definition
 

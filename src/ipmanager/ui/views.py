@@ -17,7 +17,7 @@ class RootView(TemplateView):
         Otherwise, display the "Login Required" page."""
 
         if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('home_page'))
+            return HttpResponseRedirect(reverse('list_all_groups'))
         else:
             return super().get(request, *args, **kwargs)
 
