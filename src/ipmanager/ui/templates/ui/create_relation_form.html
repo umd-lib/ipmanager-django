@@ -1,13 +1,19 @@
-{% extends 'ui/base.html' %}
-{% block content %}
-
-{{ form.non_field_errors }}
-<form method="post" action="{% url 'relation' group.key %}">{% csrf_token %}
+{% extends 'ui/base.html' %} {% block content %} {{ form.non_field_errors }}
+<form method="post" action="{% url 'relation' group.key %}">
+  {% csrf_token %}
   {{ form.subject }}
-  {{ form.object }}
-  {{ form.relation }}
-  <button type="submit" class="create">Add Child Group</button>
-  <a href='{% url "single_group" group.key %}'>Cancel</a>
-</form>  
+  <div style="display: flex; flex-direction: row; align-items: center;">
+    <div style="width: 4em">{{ form.object.label }}</div>
+    {{ form.object }}
+  </div>
+  <div style="display: flex; flex-direction: row; align-items: center;">
+    <div style="width: 4em">{{ form.relation.label }}</div>
+    {{ form.relation }}
+  </div>
+  <div style="margin-top: .5em; display: flex; flex-direction: row; gap: .75em;">
+    <button type="submit" class="create">Add Child Group</button>
+    <a class="button delete" href='{% url "single_group" group.key %}'>Cancel</a>
+  </div>
+</form>
 
 {% endblock %}

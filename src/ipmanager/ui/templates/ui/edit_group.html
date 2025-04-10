@@ -31,8 +31,11 @@
 </table>
 </div>
 
-<button type="submit" class="edit">Update Group</button>
-<a href='{% url "single_group" group.key %}'>Cancel</a>
-<a href='{% url "list_all_groups" %}'>List All Groups</a>
+<div style="margin-top: .5em; display: flex; flex-direction: row; gap: .75em; align-items: center;">
+  <button type="submit" class="edit">Update Group</button>
+  <a class="button delete" href='{% url "single_group" group.key %}'>Cancel</a>
+  <a class="button delete" href='{% url "list_all_groups" %}'>Home</a>
+</div>
+
 </form>
 {% endblock %}

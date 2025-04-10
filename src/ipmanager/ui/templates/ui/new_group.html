@@ -1,37 +1,36 @@
-{% extends 'ui/base.html' %}
-{% block content %}
+{% extends 'ui/base.html' %} {% block content %}
 
+<h2>New Group</h2>
 <form method="post">
   {% csrf_token %}
-<h2>Creating Group</h2>
-<div>
-<table>
-  <tbody>
-    <tr">
-      <th>Key</th>
-      <td>{{ form.key }} {{ form.key.errors }} </td>
-    </tr>
-    <tr>
-      <th>Name</th>
-      <td>{{ form.name }} {{ form.name.errors }} </td>
-    </tr>
-    <tr>
-      <th>Description</th>
-      <td> {{ form.description }}</td>
-    </tr>
-    <tr>
-      <th>Notes</th>
-      <td>{{ form.notes }}</td>
-    </tr>
-    <tr>
-      <th>Export</th>
-      <td>{{ form.export }}</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
-<button type="submit" class="create">Create Group</button>
-<a href='{% url "list_all_groups" %}'>Cancel</a>
+  <table>
+    <tbody>
+      <tr>
+        <th>Key</th>
+        <td>{{ form.key }} {{ form.key.errors }}</td>
+      </tr>
+      <tr>
+        <th>Name</th>
+        <td>{{ form.name }} {{ form.name.errors }}</td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td>{{ form.description }}</td>
+      </tr>
+      <tr>
+        <th>Notes</th>
+        <td>{{ form.notes }}</td>
+      </tr>
+      <tr>
+        <th>Export</th>
+        <td>{{ form.export }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div style="display: flex; flex-direction: row; gap: .75em;">
+    <button type="submit" class="create">Create Group</button>
+    <a class="button delete" href='{% url "list_all_groups" %}'>Cancel</a>
+  </div>
 </form>
+
 {% endblock %}

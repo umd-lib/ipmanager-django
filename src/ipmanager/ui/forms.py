@@ -22,4 +22,4 @@ class IPRangeForm(ModelForm):
 
 
 class TestIPForm(Form):
-    test_ip = CharField(max_length=32)
+    test_ip = CharField(max_length=32, label="Test IP")
