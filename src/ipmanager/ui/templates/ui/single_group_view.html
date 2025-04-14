@@ -1,6 +1,6 @@
 {% extends 'ui/base.html' %} {% block content %}
-<div style="min-width: 20em; max-width: 40em;">
-  <div class="horizontal-container" style="justify-content: space-between;">
+<div class="flexible-width-container">
+  <div class="horizontal-container horizontal-container--space-between">
     <h1>{{group.name}} ({{group.key}})</h1>
     <div class="horizontal-container">
       <a class="button create" href='{% url "create_group"%}'
@@ -8,8 +8,8 @@
       >
       <form
         method="post"
-        style="margin-bottom: 0"
         action="{% url 'delete_group' group.pk %}"
+        class="no-margin"
       >
         {% csrf_token %}
         <button type="delete" class="delete">Delete</button>
@@ -20,7 +20,7 @@
 
   <h2>Group Information</h2>
   <div>
-    <table class="lined" style="width: 100%;">
+    <table class="lined expanded">
       <tbody>
         <tr>
           <th>Key</th>
@@ -70,7 +70,7 @@
 
   <h2>IP Ranges</h2>
 
-  <table class="lined" style="width: 100%;">
+  <table class="lined expanded">
     <tbody>
       {% for iprange in ip_ranges %}
       <tr>
@@ -78,8 +78,8 @@
         <td>
           <form
             method="post"
+            class="no-margin"
             action="{% url 'delete_ip_range' group.key iprange.pk %}"
-            style="margin-bottom: 0; max-width: max-content;"
           >
             {% csrf_token %}
             <button type="submit" class="delete">Delete</button>
@@ -92,15 +92,15 @@
 
   <form method="post" action="{% url 'create_new_ip_range' group.key %}">
     {% csrf_token %}
-    <div style="display: flex; flex-direction: row; gap: 0.75em">
+    <div class="horizontal-container">
       {{ ip_range_form }}
       <button type="submit" class="create">Add IP Range</button>
     </div>
   </form>
 
   <h2>Child Groups</h2>
-  <div class="horizontal-container" style="margin-bottom: 2em; gap: 0;">
-    <table class="lined" style="width: 50%">
+  <div class="horizontal-container-even horizontal-container-even--2">
+    <table class="lined">
       <th>Included Groups</th>
       {% for inc_groups in included_groups %}
       <tr>
@@ -118,7 +118,7 @@
       {% endfor %}
     </table>
 
-    <table class="lined" style="width: 50%">
+    <table class="lined">
       <th>Excluded Groups</th>
       {% for exc_groups in excluded_groups %}
       <tr>
@@ -139,15 +139,13 @@
 
   <form method="post" action="{% url 'relation' group.key %}">
     {% csrf_token %} {{ relation_form.subject }}
-    <div class="horizontal-container">
-      <div style="width: 4em">{{ relation_form.object.label }}</div>
+    <div class="square-grid">
+      <div>{{ relation_form.object.label }}</div>
       {{ relation_form.object }}
-    </div>
-    <div class="horizontal-container">
-      <div style="width: 4em">{{ relation_form.relation.label }}</div>
+      <div>{{ relation_form.relation.label }}</div>
       {{ relation_form.relation }}
     </div>
-    <button type="submit" style="margin-top: 0.5em" class="create">
+    <button type="submit" class="create margin-top--small">
       Add Child Group
     </button>
   </form>

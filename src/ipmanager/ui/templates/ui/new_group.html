@@ -3,7 +3,7 @@
 <h2>New Group</h2>
 <form method="post">
   {% csrf_token %}
-  <table>
+  <table class="lined">
     <tbody>
       <tr>
         <th>Key</th>
@@ -27,7 +27,7 @@
       </tr>
     </tbody>
   </table>
-  <div style="display: flex; flex-direction: row; gap: .75em;">
+  <div class="horizontal-container">
     <button type="submit" class="create">Create Group</button>
     <a class="button delete" href='{% url "list_all_groups" %}'>Cancel</a>
   </div>

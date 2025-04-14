@@ -5,7 +5,7 @@
   {% csrf_token %}
 <h2>Editing Group</h2>
 <div>
-<table>
+<table class="lined">
   <tbody>
     <tr">
       <th>Key</th>
@@ -31,7 +31,7 @@
 </table>
 </div>
 
-<div style="margin-top: .5em; display: flex; flex-direction: row; gap: .75em; align-items: center;">
+<div class="horizontal-container">
   <button type="submit" class="edit">Update Group</button>
   <a class="button delete" href='{% url "single_group" group.key %}'>Cancel</a>
   <a class="button delete" href='{% url "list_all_groups" %}'>Home</a>

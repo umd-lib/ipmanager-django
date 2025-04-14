@@ -1,10 +1,10 @@
 {% extends 'ui/base.html' %}
 {% block content %}
 {% include 'ui/test_ip_form.html' %}
-<a class="button create" style="margin-bottom: .5em; margin-top: 1em" href='{% url "create_group"%}'>New Group</a>
+<a class="button create" href='{% url "create_group"%}'>New Group</a>
 {% if group_list %}
 
-  <table>
+  <table class="lined margin-top--small">
     <thead>
       <th>Key</th>
       <th>Name</th>
