@@ -10,6 +10,9 @@ Please see [DevelopmentEnvironmentLocal](docs/DevelopmentEnvironmentLocal.md) fo
 a full tutorial on how to set up this application (including SAML) to run
 on your local machine.
 
+Please see [DockerComposeLocal](docs/DockerComposeLocal.md) for how to run this
+application locally with Docker and Postgresql using Docker-Compose!
+
 To run the webapp using the built-in web server:
 
 ```zsh
