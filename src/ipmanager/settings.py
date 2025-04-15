@@ -81,6 +81,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -196,6 +197,12 @@ LOGGING = {
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+STORAGES = {
+    # Backend storage - compression and caching for WhiteNoise
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    }
+}
 
 STATIC_URL = 'static/'
 
@@ -211,7 +218,6 @@ SAML_SESSION_COOKIE_SAMESITE = env('SAML_SESSION_COOKIE_SAMESITE', default='None
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE', default=True)
 
 # Handling Post-Login Redirects
-print(ALLOWED_HOSTS)
 SAML_ALLOWED_HOSTS = env('SAML_ALLOWED_HOSTS', cast=[str], default=ALLOWED_HOSTS)
 
 SAML_DEFAULT_BINDING = saml2.BINDING_HTTP_POST
