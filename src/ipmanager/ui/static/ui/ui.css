@@ -1,16 +1,60 @@
-.notice {
-    margin: 0 auto;
-    width: fit-content;
-    border: 1px solid var(--medium-gray);
-    border-radius: 5px;
-    text-align: center;
+/* Single element modifiers */
+.expanded {
+  width: 100%;
 }
-.notice>h1 {
-    font-size: 1.25em;
-    margin: 0;
-    padding: .25em;
-    border-bottom: 1px solid var(--light-gray);
+
+.no-margin {
+  margin: 0;
 }
-.notice>p {
-    margin: 1em;
+
+.margin-top--small {
+  margin-top: .5em;
+}
+
+/* Element containers
+
+    Containers follow the BEM (Block Element Modifier) naming scheme.
+    block__element--modifier
+
+    These containers don't have 'element' subdivisions, because they only
+    contain one type of element within. Modifiers, however, are relevant because
+    we may want multiple variants of the same container.
+*/
+
+.flexible-width-container {
+  min-width: 20em;
+  max-width: 40em;
+}
+
+.horizontal-container {
+  margin-top: 0.5em;
+  display: flex;
+  flex-direction: row;
+  gap: 0.75em;
+  align-items: center;
+}
+
+.horizontal-container--space-between {
+  justify-content: space-between;
+}
+
+.horizontal-container-even {
+  margin-top: .5em;
+  display: grid;
+  grid-template-rows: 1fr;
+  align-items: center;
+  gap: .75em;
+}
+
+.horizontal-container-even--2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.square-grid {
+  margin-top: .5em;
+  display: grid;
+  grid-template-columns: max-content max-content;
+  grid-template-rows: max-content max-content;
+  align-items: center;
+  gap: .75em;
 }

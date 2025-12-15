@@ -1,108 +1,153 @@
-{% extends 'ui/base.html' %}
-{% block content %}
-<h1> {{group.key}} </h1>
-{% include 'ui/test_ip_form.html' %}
-<a href='{% url "create_group"%}'>New Group</a>
-<form method="post" action="{% url 'delete_group' group.pk %}">{% csrf_token %}
-  <button type="delete" class="delete">Delete</button>
-</form>
-<h2>Group Information</h2>
-<div>
-<table>
-  <tbody>
-    <tr>
-      <th>Key</th>
-      <td>{{group.key}}</td>
-    </tr>
-    <tr>
-      <th>Name</th>
-      <td>{{group.name}}</td>
-    </tr>
-    <tr>
-      <th>Description</th>
-      <td>{{group.description}}</td>
-    </tr>
-    <tr>
-      <th>Notes</th>
-      <td>{{group.notes}}</td>
-    </tr>
-    <tr>
-      <th>Export</th>
-      {% if group.export %}
-          <td><span class="export_true">Yes</span> - Group is sent to client applications</td>
-      {% else %}
-          <td><span class="export_false">No</span> - Group is used internally, and not sent to client applications</td>
-      {% endif %}
-    </tr>
-    {% if test_ip %}
-      <tr>
-        <th>Group Contains IP?</th>
-        <td>{{contained}}</td>
-      </tr>
-    {% endif %}
-  </tbody>
-</table>
-</div>
-<br>
+{% extends 'ui/base.html' %} {% block content %}
+<div class="flexible-width-container">
+  <div class="horizontal-container horizontal-container--space-between">
+    <h1>{{group.name}} ({{group.key}})</h1>
+    <div class="horizontal-container">
+      <a class="button create" href='{% url "create_group"%}'
+        >New Group</a
+      >
+      <form
+        method="post"
+        action="{% url 'delete_group' group.pk %}"
+        class="no-margin"
+      >
+        {% csrf_token %}
+        <button type="delete" class="delete">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% include 'ui/test_ip_form.html' %}
 
-<a href='{% url "edit_group" group.pk %}' class="button">Edit Group</a>
+  <h2>Group Information</h2>
+  <div>
+    <table class="lined expanded">
+      <tbody>
+        <tr>
+          <th>Key</th>
+          <td>{{group.key}}</td>
+        </tr>
+        <tr>
+          <th>Name</th>
+          <td>{{group.name}}</td>
+        </tr>
+        <tr>
+          <th>Description</th>
+          <td>{{group.description}}</td>
+        </tr>
+        <tr>
+          <th>Notes</th>
+          <td>{{group.notes}}</td>
+        </tr>
+        <tr>
+          <th>Export</th>
+          {% if group.export %}
+          <td>
+            <span class="export_true">Yes</span> - Group is sent to client
+            applications
+          </td>
+          {% else %}
+          <td>
+            <span class="export_false">No</span> - Group is used internally, and
+            not sent to client applications
+          </td>
+          {% endif %}
+        </tr>
+        {% if test_ip %}
+        <tr>
+          <th>Group Contains IP?</th>
+          <td>{{contained}}</td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
 
-<h2>IP Ranges</h2>
-<div>
-<table>
-  <tbody>
-    {% for iprange in ip_ranges %}
+  <a
+    href='{% url "edit_group" group.pk %}'
+    class="button edit"
+    >Edit Group</a
+  >
+
+  <h2>IP Ranges</h2>
+
+  <table class="lined expanded">
+    <tbody>
+      {% for iprange in ip_ranges %}
       <tr>
         <td>{{iprange.value}}</td>
         <td>
-          <form method="post" action="{% url 'delete_ip_range' group.key iprange.pk %}"> {% csrf_token %}
+          <form
+            method="post"
+            class="no-margin"
+            action="{% url 'delete_ip_range' group.key iprange.pk %}"
+          >
+            {% csrf_token %}
             <button type="submit" class="delete">Delete</button>
-          </form> 
+          </form>
         </td>
       </tr>
-    {% endfor %}
-  </tbody>
-</table>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <form method="post" action="{% url 'create_new_ip_range' group.key %}">
+    {% csrf_token %}
+    <div class="horizontal-container">
+      {{ ip_range_form }}
+      <button type="submit" class="create">Add IP Range</button>
+    </div>
+  </form>
+
+  <h2>Child Groups</h2>
+  <div class="horizontal-container-even horizontal-container-even--2">
+    <table class="lined">
+      <th>Included Groups</th>
+      {% for inc_groups in included_groups %}
+      <tr>
+        <td>
+          {{inc_groups.object.key}} - {{inc_groups.object.name}}
+          <form
+            method="post"
+            action="{% url 'delete_relation' group.key inc_groups.pk %}"
+          >
+            {% csrf_token %}
+            <button class="delete" type="delete">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <table class="lined">
+      <th>Excluded Groups</th>
+      {% for exc_groups in excluded_groups %}
+      <tr>
+        <td>
+          {{exc_groups.object.key}} - {{exc_groups.object.name}}
+          <form
+            method="post"
+            action="{% url 'delete_relation' group.key exc_groups.pk %}"
+          >
+            {% csrf_token %}
+            <button type="delete">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <form method="post" action="{% url 'relation' group.key %}">
+    {% csrf_token %} {{ relation_form.subject }}
+    <div class="square-grid">
+      <div>{{ relation_form.object.label }}</div>
+      {{ relation_form.object }}
+      <div>{{ relation_form.relation.label }}</div>
+      {{ relation_form.relation }}
+    </div>
+    <button type="submit" class="create margin-top--small">
+      Add Child Group
+    </button>
+  </form>
 </div>
-<form method="post" action="{% url 'create_new_ip_range' group.key %}"> {% csrf_token %}
-  {{ ip_range_form }}
-  <button type="submit" class="create">Add IP Range</button>
-</form> 
-
-<br>
-
-<h2>Child Groups</h2>
-<div>
-<table>
-  <th>
-    Included Groups
-  </th>
-  {% for inc_groups in included_groups %}
-    <tr><td>{{inc_groups.object.key}} - {{inc_groups.object.name}}
-      <form method="post" action="{% url 'delete_relation' group.key inc_groups.pk %}">{% csrf_token %}
-        <button class="delete" type="delete">Delete</button>
-      </form>
-    </td> </tr>
-  {% endfor %}
-</table>
-
-<table>
-  <th>
-    Excluded Groups
-  </th>
-  {% for exc_groups in excluded_groups %}
-    <tr><td>{{exc_groups.object.key}} - {{exc_groups.object.name}}
-      <form method="post" action="{% url 'delete_relation' group.key exc_groups.pk %}">{% csrf_token %}
-        <button type="delete">Delete</button>
-      </form>
-    </td> </tr>
-  {% endfor %}
-</table>
-</div>
-<form method="post" action="{% url 'relation' group.key %}">{% csrf_token %}
-  {{ relation_form }}
-  <button type="submit" class="create">Add Child Group</button>
-</form>  
-<br>
-
 {% endblock %}
