@@ -1,0 +1,56 @@
+version: "1"
+
+services:
+  ipmanager-postgres:
+    image: postgres:17
+    networks: 
+      - ipmanager-network
+    volumes:
+      - ./dockervols/postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432"
+    environment:
+      - "POSTGRES_PASSWORD=Pass1234"
+      - "POSTGRES_USER=ipmanager"
+      - "POSTGRES_DB=ipmanager"
+
+  start-ipmanager-dependencies:
+    image: dadarek/wait-for-dependencies
+    networks:
+      - ipmanager-network
+    depends_on:
+     - "ipmanager-postgres"
+    command: "ipmanager-postgres:5432"
+
+  ipmanager-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - ipmanager-network
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./env:/etc/ipmanager/saml
+    environment:
+      - "BASE_URL=http://ipmanager-local:3001/"
+      - "DB_ENGINE=django.db.backends.postgresql"
+      - "DB_HOST=ipmanager-postgres"
+      - "DB_PORT=5432"
+      - "DB_NAME=ipmanager"
+      - "DB_USER=ipmanager"
+      - "DB_PASSWORD=Pass1234"
+      - "SERVER_PORT=3001"
+      - "XMLSEC1_PATH=/usr/bin/xmlsec1"
+      - "SECRET_KEY=9cc159ea50782f9cd254793eb1ad604d381549a6f9ae7dcaef8d6cbed17406c0"
+      - "ENVIRONMENT=production"
+      - "DEBUG=true"
+      - "SAML_KEY_FILE=/etc/ipmanager/saml/ipmanager-key.key"
+      - "SAML_CERT_FILE=/etc/ipmanager/saml/ipmanager-cert.crt"
+      - "SESSION_COOKIE_SECURE=False"
+      - "SAML_SESSION_COOKIE_SAMESITE=Lax"
+    depends_on:
+     - "start-ipmanager-dependencies"
+    
+networks:
+  ipmanager-network:

@@ -68,9 +68,9 @@ on a local workstation.
     and update the following variables with the appropriate values:
 
     * SAML_KEY_FILE - relative (or absolute) file path to the
-      `grove-test-lib-umd-edu-sp.key` file
+      `ipmanager-key.key` file
     * SAML_CERT_FILE - relative (or absolute) file path to the
-      ``grove-test-lib-umd-edu-sp.crt` file
+      `ipmanager-cert.crt` file
     * SECRET_KEY - Either comment out (a random key will be automatically
       generated), or populate with anything with sufficient randomness,
       i.e. `uuidgen | shasum -a 256 | cut -c-64`
