@@ -34,9 +34,12 @@ environment on a local workstation.
 1. Clone ipmanager-django from GitHub:
 
     ```zsh
-    git clone git@github.com:umd-lib/ipmanager-django.git
+    git clone --recurse-submodules git@github.com:umd-lib/ipmanager-django.git
     cd ipmanager-django
     ```
+   
+   Note the `--recurse-submodules` flag. This is required because 
+   ipmanager-django includes the [cidr] package as a [Git submodule].
 
 2. Set up the Python virtual environment, and install the dependencies
 
@@ -121,6 +124,8 @@ To run with coverage information:
 pytest --cov src --cov-report term-missing
 ```
 
+[cidr]: https://github.com/wallberg/cidr
+[Git submodule]: https://git-scm.com/book/en/v2/Git-Tools-Submodules
 [djangosaml2]: https://djangosaml2.readthedocs.io/
 [pytest]: https://pytest.org/
 [pytest-django]: https://pytest-django.readthedocs.io/en/latest/
