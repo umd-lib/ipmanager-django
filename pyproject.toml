@@ -1,6 +1,16 @@
 [project]
 name = "ipmanager-django"
 description = "Stand-alone IP Manager Service (Django implementation)"
+authors = [
+    { name="University of Maryland Libraries", email="lib-ssdr@umd.edu" },
+    { name="Peter Eichman", email="peichman@umd.edu" },
+    { name="Erik Jones", email="ejones99@umd.edu" },
+    # 2025 Sprinterns
+    { name="Neola Dsouza", email="nldsouza@umd.edu" },
+    { name="Aatish Gupta", email="aatish@umd.edu" },
+    { name="Mackenzie Kilgore", email="mkilgore@umd.edu" },
+    { name="Dorian Mkam", email="dmkam@umd.edu" },
+]
 version = "1.0.0-dev"
 dependencies = [
     "django~=5.2.9",
