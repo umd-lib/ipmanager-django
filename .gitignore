@@ -61,6 +61,7 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+staticfiles/
 
 # Flask stuff:
 instance/
@@ -170,3 +171,7 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# SAML certs
+ipmanager-local.crt
+ipmanager-local.key
