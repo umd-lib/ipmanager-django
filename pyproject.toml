@@ -3,24 +3,28 @@ name = "ipmanager-django"
 description = "Stand-alone IP Manager Service (Django implementation)"
 version = "1.0.0-dev"
 dependencies = [
-    "django",
-    "django-umd-lib-style",
-    "django-extensions",
-    "django-environ",
-    "binarytree",
-    "djangosaml2",
-    "urlobject"
+    "django~=5.2.9",
+    "django-umd-lib-style~=1.2",
+    "django-extensions~=4.1",
+    "django-environ~=0.12",
+    "binarytree~=6.5",
+    "djangosaml2~=1.11",
+    "urlobject~=3.0.0",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 test = [
-    "pytest",
-    "pytest-django",
-    "ruff",
+    "pytest~=9.0",
+    "pytest-django~=4.11",
+    "ruff~=0.14",
 ]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "ipmanager.settings"
+filterwarnings = [
+    # these warnings are coming from third-party code
+    "ignore:pkg_resources is deprecated as an API.:DeprecationWarning",
+]
 
 [tool.ruff.format]
 # Prefer single quotes over double quotes.

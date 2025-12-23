@@ -72,8 +72,8 @@ to include a more user-friendly admin UI. The API was also changed from
 the XML format used by the original application to a more modern JSON
 implementation.
 
-In 2025, it is being reimplemented again, this time using Python and the
-Django framework.
+In 2025 and 2026, it is being reimplemented again, this time using Python 
+and the Django framework.
 
 ## License
 
