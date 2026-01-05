@@ -1,3 +1,0 @@
-[submodule "src/ipmanager/core/cidr"]
-	path = src/ipmanager/core/cidr
-	url = https://github.com/wallberg/cidr.git
