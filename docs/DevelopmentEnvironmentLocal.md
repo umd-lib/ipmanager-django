@@ -34,13 +34,10 @@ environment on a local workstation.
 1. Clone ipmanager-django from GitHub:
 
     ```zsh
-    git clone --recurse-submodules git@github.com:umd-lib/ipmanager-django.git
+    git clone git@github.com:umd-lib/ipmanager-django.git
     cd ipmanager-django
     ```
    
-   Note the `--recurse-submodules` flag. This is required because 
-   ipmanager-django includes the [cidr] package as a [Git submodule].
-
 2. Set up the Python virtual environment, and install the dependencies
 
     ```zsh
