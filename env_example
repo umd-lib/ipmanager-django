@@ -1,4 +1,4 @@
-BASE_URL=http://ipmanager-local:15001/
+BASE_URL=http://ipmanager-local:3001/
 DATABASE_URL=sqlite:///db.sqlite3
 DEBUG=True
 ENVIRONMENT=development
