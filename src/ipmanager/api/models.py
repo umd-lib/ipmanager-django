@@ -18,6 +18,8 @@ from django_extensions.db.models import TimeStampedModel
 
 from ipmanager.core.cidr import Cidr, CidrSet
 
+from django.contrib.auth import get_user_model
+
 
 class Group(TimeStampedModel):
     key = CharField(
@@ -102,3 +104,13 @@ class Relation(TimeStampedModel):
 
     def __str__(self):
         return f'{self.subject} {"includes" if self.relation == Relation.RelationType.INCLUSION else "excludes"} {self.object}'
+
+class Note(TimeStampedModel):
+    user = ForeignKey(get_user_model(), on_delete=CASCADE)
+    content = TextField()
+    group = ForeignKey(Group, on_delete=CASCADE)
+
+    def __str__(self):
+        return f'{self.created.strftime("%Y-%m-%d %H:%M:%S")} [{self.user.username}]: {self.content}'
+    
+# we want this 2025-01-02T16:29:43Z
