@@ -68,6 +68,24 @@
     >Edit Group</a
   >
 
+  <!--
+  Add the <h2> heading right here for the Notes
+  -->
+  <h2>Notes</h2>
+
+  <table class="lined expanded">
+    <tbody>
+      {% for note in notes %}
+      <tr>
+        <td>{{ note.created|date:"F j, Y"}} {{ note.created|time:"g:i:sA" }}</td>
+        <td>{{note.user}}</td>
+        <td>{{note.content}}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
   <h2>IP Ranges</h2>
 
   <table class="lined expanded">
