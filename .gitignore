@@ -176,3 +176,9 @@ cython_debug/
 # SAML certs
 ipmanager-local.crt
 ipmanager-local.key
+
+# Rails to Django data migration
+groups.csv
+ip_ranges.csv
+ipmanager_fixture.json 
+relations.csv
