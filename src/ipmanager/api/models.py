@@ -102,3 +102,13 @@ class Relation(TimeStampedModel):
 
     def __str__(self):
         return f'{self.subject} {"includes" if self.relation == Relation.RelationType.INCLUSION else "excludes"} {self.object}'
+
+class Note(TimeStampedModel):
+    user_id = ForeignKey(get_user_model(), on_delete=CASCADE)
+    group_id = ForeignKey(Group, on_delete=CASCADE)
+    content = TextField()
+    def __str__(self):
+        return f'{self.created} [{self.user.username}]: {self.content}'
+
+
+from django.contrib.auth import get_user_model

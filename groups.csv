@@ -1,0 +1,30 @@
+id,key,name,description,notes,created_at,updated_at,export
+3,mckeldin-public,McKeldin Library (Public),McKeldin Library (Public),,2022-06-07 16:18:24.581966,2022-06-07 16:18:24.682203,f
+4,mckeldin-staff,McKeldin Library (Staff),McKeldin Library (Staff),,2022-06-07 16:18:24.603,2022-06-07 16:18:24.74145,f
+5,pal-public,Performing Arts Library (Public),Performing Arts Library (Public),,2022-06-07 16:18:24.616742,2022-06-07 16:18:24.757181,f
+6,pal-staff,Performing Arts Library (Staff),Performing Arts Library (Staff),,2022-06-07 16:18:24.634216,2022-06-07 16:18:24.771369,f
+7,hornbake-public,Hornbake Library (Public),Hornbake Library (Public),,2022-06-07 16:18:24.650405,2022-06-07 16:18:24.782962,f
+8,hornbake-staff,Hornbake Library (Staff),Hornbake Library (Staff),,2022-06-07 16:18:24.665139,2022-06-07 16:18:24.794275,f
+10,prange,Prange,Prange,,2022-06-07 16:18:24.812286,2022-06-07 16:18:24.838679,f
+16,world,Any IP Address,Any IP Address,,2022-06-07 16:18:24.891927,2022-06-07 16:18:24.952573,f
+17,shady-grove-umfilms,"Films@UM, Shady Grove","Films@UM, Shady Grove",,2022-06-07 16:18:24.992628,2022-06-07 16:18:25.006763,f
+2,henson,The Jim Henson Works,The Jim Henson Works,"",2022-06-07 16:18:24.514676,2022-06-16 17:31:32.874286,t
+14,films,Films@UM,Films@UM,"",2022-06-07 16:18:24.867631,2022-06-21 11:18:27.657017,t
+26,stem-public,STEM Library (Public),STEM Library (Public),"",2023-02-02 18:19:27.832965,2023-02-02 18:20:18.776317,f
+27,stem-staff,STEM Library (Staff),STEM Library (Staff),"",2023-02-02 18:24:33.907221,2023-02-02 18:24:33.907221,f
+28,mspal-public,MSPAL Library (Public),MSPAL Library (Public),"",2023-02-02 18:25:35.474699,2023-02-02 18:25:35.474699,f
+29,mspal-staff,MSPAL Library (Staff),MSPAL Library (Staff),"",2023-02-02 18:26:20.482189,2023-02-02 18:26:20.482189,f
+30,arch-public,Architecture Library (Public),Architecture Library (Public),"",2023-02-02 18:27:22.655814,2023-02-02 18:27:22.655814,f
+31,arch-staff,Architecture Library (Staff),Architecture Library (Staff),"",2023-02-02 18:28:49.441883,2023-02-02 18:28:49.441883,f
+32,art-public,Art Library (Public),Art Library (Public),"",2023-02-02 18:29:47.517627,2023-02-02 18:29:47.517627,f
+33,art-staff,Art Library (Staff),Art Library (Staff),"",2023-02-02 18:30:34.462914,2023-02-02 18:30:34.462914,f
+34,severn-staff,Severn Library (Staff),Severn Library (Staff),"",2023-02-02 18:31:09.472903,2023-02-02 18:31:09.472903,f
+39,arch-selfcheck,Architecture Library (Self-Check),Architecture Library Self-Check machine,"BW 2024-07-25: new group, https://umd-dit.atlassian.net/browse/LIBDEVOPS-947",2024-07-25 12:57:15.833057,2024-07-25 12:57:15.833057,f
+40,mckeldin-selfcheck,McKeldin Library (Self-Check),McKeldin Library Self-Check machine,"BW 2024-07-25: new group, https://umd-dit.atlassian.net/browse/LIBDEVOPS-947",2024-07-25 12:58:52.863852,2024-07-25 12:58:52.863852,f
+37,umbc,UMBC,UMBC campus and EZProxy,2024-06-27 BW: Add new group,2024-06-27 16:14:52.198444,2024-06-27 16:14:52.198444,f
+25,usmai-ezproxy,USMAI EZProxy,USMAI EZProxy (other than UMD),"2023-01-02 BW: Gathered from https://confluence.umd.edu/display/ULDW/EZProxy; 2024-06-27 BW: Moved UMBC addresses into included usmai-ezproxy-umbc group.",2023-02-02 17:38:35.708582,2024-06-27 16:16:13.144849,f
+36,usmai-ezproxy-umbc,USMAI EZProxy (UMBC),USMAI EZProxy (UMBC),"2024-06-27 BW: Create new group, which includes EZProxy production and test IP addresses",2024-06-27 16:06:58.371466,2024-06-27 16:16:26.288226,f
+41,um-lib-servers-public,UM Libraries World Accessible Range,UM Libraries World Accessible Range (CHR servers),"2024-11-01: BW, based on information learned from SysAid critical security incident",2024-11-01 14:27:41.527719,2024-11-01 14:35:52.050693,f
+42,um-lib-servers-campus,UM Libraries Campus Only Range,UM Libraries Campus Only Range (CHR servers),"2024-11-01: BW, based on information learned from SysAid critical security incident; currently only used by some physical servers in CHR (eg. VEEAM), not available for use generally in VMWare vSphere",2024-11-01 14:36:58.24066,2024-11-01 14:36:58.24066,f
+12,um,UMD College Park campus and VPN,UMD College Park campus and VPN,"BW 2025-07-10: Per Eric Sturdivant ""206.196.160.0/19 is no longer considered part of campus and should be removed""; BW 2024-08-05: Updated to match new DIT information in https://umd-dit.atlassian.net/wiki/spaces/ULDW/pages/537788424/Libraries+IP+Space+and+Firewall; BW 2023-01-02: Exclude USMAI EZProxy IPs (other than UMD EZProxy); KD 2022-06-22: Updated name/description for clarity.",2022-06-07 16:18:24.845474,2025-07-10 19:41:40.773755,t
+35,um-vpn,UMD College Park VPN,UMD College Park VPN,"2025-07-10: BW, per Dan Bowling,  129.2.90.0/24 is the external IP range for VPN; 2024-06-10: BW, added based on information Dan learned from DIT",2024-06-10 18:18:59.517437,2025-07-10 20:06:30.795808,f

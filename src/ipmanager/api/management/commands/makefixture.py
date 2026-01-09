@@ -8,7 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 def parse_time(value):
     if not value:
         return None
-    date = datetime.strptime(value, "%Y-%m-%d %H:%M:%S.%f")
+    date = datetime.strptime(value,"%Y-%m-%d %H:%M:%S.%f")
     return date.isoformat() + "Z"
 
 # converting the rails boolean format to the Django format
@@ -58,30 +58,26 @@ def relations_converting(row):
         }
     }
 
-def rename_keys(data, new_name, old_name):
-    data[new_name] = data.pop(old_name)
-    return data[new_name]
-
-
 class Command(BaseCommand):
     help = "Read the CSV file and create fixture data."
 
     def add_arguments(self, parser):
-        parser.add_argument("file_path", nargs="?", type=Path, help="src/ipmanager/groups.csv")
+        parser.add_argument("file_path", type=Path, help="src/ipmanager/groups.csv")
 
         parser.add_argument(
         "--kind", 
             choices=["group", "iprange", "relation"], 
             help="Type of CSV: group, iprange, or relation."
         )
-    def handle (self, *args, **options):
-        file_path = Path(options ["file_path"])
+
+        parser.add_argument('--output', '-o', type=Path, required=True)
+
+    def handle(self, *args,**options):
+        file_path = Path(options["file_path"])
         kind = options["kind"]
 
-        print("File path is:", file_path)
+        self.stdout.write("File path is:", file_path)
 
-        if file_path is None:
-            raise CommandError("Provide a valid file path.")
         if not file_path.exists():
             raise CommandError(f"File not found: {file_path}")
 
@@ -92,31 +88,26 @@ class Command(BaseCommand):
         else: 
             converter = relations_converting
 
-        fixture_objects = self.read_csv (file_path, converter)
+        fixture_objects = self.convert_csv(file_path, converter)
         for obj in fixture_objects:
-            print(obj)
+            self.stdout.write(obj)
             self.stdout.write(self.style.SUCCESS(f"Successfully processed row: {converter}"))
 
-        output_file = Path("ipmanager_fixture.json")
+        
+        output_file = options['output']
         with output_file.open("w", encoding="utf-8") as out_file:
             import json
             json.dump(fixture_objects, out_file, indent=4)
         self.stdout.write(self.style.SUCCESS(f"Fixture data written to {output_file}"))
 
-    def read_csv(self, file_path, converter):
+    def convert_csv(self, file_path, converter):
         """Read CSV files and convert using the given converter"""
   
-       
         objects = []
         with file_path.open(newline='', encoding='utf-8') as data:
             reader = csv.DictReader(data)
             for row in reader:
-                print(row)
+                self.stdout.write(row)
                 fixture_obj = converter(row)
                 objects.append(fixture_obj)
-            return objects
-"""
-converter = ip_ranges_converting
-converter1 = groups_converting
-converter2 = relations_converting
-"""
+            return object
