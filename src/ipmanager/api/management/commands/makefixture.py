@@ -110,4 +110,4 @@ class Command(BaseCommand):
                 self.stdout.write(row)
                 fixture_obj = converter(row)
                 objects.append(fixture_obj)
-            return object
+            return objects
