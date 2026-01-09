@@ -18,6 +18,8 @@ from django_extensions.db.models import TimeStampedModel
 
 from ipmanager.core.cidr import Cidr, CidrSet
 
+from django.contrib.auth import get_user_model
+
 
 class Group(TimeStampedModel):
     key = CharField(

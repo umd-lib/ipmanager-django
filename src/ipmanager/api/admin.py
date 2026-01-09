@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Group, IPRange, Relation
+from .models import Group, IPRange, Relation, Note
 
 
 class GroupAdmin(admin.ModelAdmin):
@@ -21,3 +21,10 @@ class RelationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Relation, RelationAdmin)
+
+
+class NoteAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(Note, NoteAdmin)
