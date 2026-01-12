@@ -6,7 +6,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from ipmanager.api.models import Group, IPRange, Relation
+from ipmanager.api.models import Group, IPRange, Relation, Note
 from ipmanager.ui.forms import IPRangeForm, RelationForm, TestIPForm
 
 class RootView(TemplateView):
@@ -73,6 +73,7 @@ class SingleGroupView(LoginRequiredMixin, DetailView):
                 subject=current_group, relation=Relation.RelationType.EXCLUSION
             ),
             ip_range_form=IPRangeForm(initial={'group': current_group}),
+            notes=Note.objects.filter(group=current_group),
             form=TestIPForm,
             contained=contained,
             test_ip=test_ip,
