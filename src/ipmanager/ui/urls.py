@@ -2,7 +2,7 @@ from django.urls import path
 
 from .views import (CreateGroupView, CreateIPRangeView, CreateRelationView, DeleteGroupView,
                     DeleteIPRangeView, DeleteRelationView, EditGroupView, GroupListView, RootView,
-                    SingleGroupView)
+                    SingleGroupView, CreateNoteView)
 
 urlpatterns = [
     path('groups', GroupListView.as_view(), name='list_all_groups'),
@@ -24,6 +24,10 @@ urlpatterns = [
         'groups/<str:key>/relation/<int:pk>/delete',
         DeleteRelationView.as_view(),
         name='delete_relation',
+    ),
+    path('groups/<str:key>/notes',
+         CreateNoteView.as_view(),
+         name='create_note'
     ),
     path(
         'groups/<str:key>/ip_ranges',

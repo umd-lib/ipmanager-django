@@ -1,13 +1,13 @@
 from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
 from ipmanager.api.models import Group, IPRange, Relation, Note
-from ipmanager.ui.forms import IPRangeForm, RelationForm, TestIPForm
+from ipmanager.ui.forms import IPRangeForm, RelationForm, TestIPForm, NoteForm
 
 class RootView(TemplateView):
     template_name = 'ui/login_required.html'
@@ -46,7 +46,6 @@ class GroupListView(LoginRequiredMixin, ListView):
         )
         return context
 
-
 class SingleGroupView(LoginRequiredMixin, DetailView):
     model = Group
     template_name = 'ui/single_group_view.html'
@@ -72,8 +71,9 @@ class SingleGroupView(LoginRequiredMixin, DetailView):
             excluded_groups=Relation.objects.filter(
                 subject=current_group, relation=Relation.RelationType.EXCLUSION
             ),
-            ip_range_form=IPRangeForm(initial={'group': current_group}),
             notes=Note.objects.filter(group=current_group),
+            ip_range_form=IPRangeForm(initial={'group': current_group}),
+            note_form = NoteForm(initial={'user': self.request.user, 'group': current_group}),
             form=TestIPForm,
             contained=contained,
             test_ip=test_ip,
@@ -104,7 +104,10 @@ class CreateGroupView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('single_group', args=[self.object.key])
-
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
+    def form_valid(self, form):
+        return super().form_valid(form)
 
 class DeleteGroupView(LoginRequiredMixin, DeleteView):
     model = Group
@@ -132,6 +135,18 @@ class DeleteRelationView(LoginRequiredMixin, DeleteView):
     def get_success_url(self):
         return reverse('single_group', args=[self.object.subject.key])
 
+class CreateNoteView(LoginRequiredMixin, CreateView):
+    form_class = NoteForm
+    template_name = 'ui/add_note_form.html'
+
+    def get_success_url(self):
+        return reverse('single_group', args=[self.object.group.key])
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_group = Group.objects.filter(key=self.kwargs.get('key')).first()
+        context.update(group=current_group)
+        return context
 
 class CreateIPRangeView(LoginRequiredMixin, CreateView):
     form_class = IPRangeForm
