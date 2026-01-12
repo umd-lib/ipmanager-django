@@ -1,5 +1,4 @@
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
@@ -104,10 +103,6 @@ class CreateGroupView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse('single_group', args=[self.object.key])
-    def get_context_data(self, **kwargs):
-        return super().get_context_data(**kwargs)
-    def form_valid(self, form):
-        return super().form_valid(form)
 
 class DeleteGroupView(LoginRequiredMixin, DeleteView):
     model = Group

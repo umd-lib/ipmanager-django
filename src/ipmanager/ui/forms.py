@@ -1,5 +1,4 @@
-from django.forms import CharField, Form, HiddenInput, ModelForm, Textarea
-from django.utils.translation import gettext_lazy as _
+from django.forms import CharField, Form, HiddenInput, ModelForm
 
 from ipmanager.api.models import IPRange, Relation, Note
 

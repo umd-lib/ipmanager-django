@@ -111,3 +111,4 @@ class Command(BaseCommand):
                 fixture_obj = converter(row)
                 objects.append(fixture_obj)
             return objects
+            
