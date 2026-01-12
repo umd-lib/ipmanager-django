@@ -68,9 +68,6 @@
     >Edit Group</a
   >
 
-  <!--
-  Add the <h2> heading right here for the Notes
-  -->
   <h2>Notes</h2>
 
   <table class="lined expanded">
@@ -85,6 +82,13 @@
     </tbody>
   </table>
 
+  <form method="post" action="{% url 'create_note' group.key %}">
+    {% csrf_token %}
+    <div class="horizontal-container">
+      {{ note_form }}
+      <button type="submit" class="create">Add Note</button>
+    </div>
+  </form>
 
   <h2>IP Ranges</h2>
 

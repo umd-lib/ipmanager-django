@@ -1,0 +1,15 @@
+{% extends 'ui/base.html' %}
+{% block content %}
+
+{{ form.errors }}
+<form method="post" action="{%url 'create_note' group.key%}">{% csrf_token %}
+  {{ form.user }}
+
+  <div class="field">
+    {{form.content}}
+ 
+  <button type="submit" class="create">Add Group Note</button>
+  <a class="button delete" href="{% url 'single_group' group.key %}">Cancel</a>
+</form>
+
+{% endblock %}

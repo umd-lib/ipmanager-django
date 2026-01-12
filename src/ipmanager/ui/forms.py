@@ -1,6 +1,6 @@
 from django.forms import CharField, Form, HiddenInput, ModelForm
 
-from ipmanager.api.models import IPRange, Relation
+from ipmanager.api.models import IPRange, Relation, Note
 
 
 class RelationForm(ModelForm):
@@ -9,6 +9,16 @@ class RelationForm(ModelForm):
         fields = ['subject', 'object', 'relation']
         widgets = {
             'subject': HiddenInput(),
+        }
+
+
+class NoteForm(ModelForm):
+    class Meta:
+        model = Note
+        fields = ['user', 'content', 'group']
+        widgets = {
+            'user': HiddenInput(),
+            'group': HiddenInput(),
         }
 
 
