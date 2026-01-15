@@ -30,7 +30,7 @@ STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 Env.read_env(BASE_DIR / '.env')
 env = Env()
 
-BASE_URL = URLObject(env.str('BASE_URL', 'http://localhost:5000'))
+BASE_URL = URLObject(env.str('BASE_URL', 'http://ipmanager-local:3001'))
 CSRF_TRUSTED_ORIGINS = [str(BASE_URL.with_path(''))]
 
 # Quick-start development settings - unsuitable for production
@@ -43,7 +43,7 @@ SECRET_KEY = env('SECRET_KEY', default=get_random_secret_key())
 DEBUG = env.bool('DEBUG', False)
 
 SERVER_HOST = env.str('SERVER_HOST', '0.0.0.0')
-SERVER_PORT = env.str('SERVER_PORT', '3001')
+SERVER_PORT = env.int('SERVER_PORT', 3001)
 runserver.default_addr = SERVER_HOST
 runserver.default_port = SERVER_PORT
 
