@@ -8,6 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from ipmanager.api.models import Group, IPRange, Relation, Note
 from ipmanager.ui.forms import IPRangeForm, RelationForm, TestIPForm, NoteForm
 
+
 class RootView(TemplateView):
     template_name = 'ui/login_required.html'
 
@@ -123,7 +124,6 @@ class CreateRelationView(LoginRequiredMixin, CreateView):
         context.update(group=Group.objects.filter(key=self.kwargs.get('key')).first())
         return context
 
-
 class DeleteRelationView(LoginRequiredMixin, DeleteView):
     model = Relation
 
@@ -142,6 +142,12 @@ class CreateNoteView(LoginRequiredMixin, CreateView):
         current_group = Group.objects.filter(key=self.kwargs.get('key')).first()
         context.update(group=current_group)
         return context
+    
+class DeleteNoteView(LoginRequiredMixin, DeleteView):
+    model = Note
+
+    def get_success_url(self):
+        return reverse('single_group', args=[self.object.group.key])
 
 class CreateIPRangeView(LoginRequiredMixin, CreateView):
     form_class = IPRangeForm

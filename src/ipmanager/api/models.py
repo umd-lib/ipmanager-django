@@ -29,7 +29,6 @@ class Group(TimeStampedModel):
     )
     name = CharField(max_length=128, unique=True)
     description = TextField(blank=True)
-    notes = TextField(blank=True)
     export = BooleanField(default=False)
 
     def __str__(self):
