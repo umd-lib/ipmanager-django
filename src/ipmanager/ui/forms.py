@@ -2,7 +2,6 @@ from django.forms import CharField, Form, HiddenInput, ModelForm
 
 from ipmanager.api.models import IPRange, Relation, Note
 
-
 class RelationForm(ModelForm):
     class Meta:
         model = Relation
