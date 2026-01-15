@@ -22,7 +22,6 @@ known_users = {
     }
 
 def classify_user(user_model, initials):
-    print(initials)
     attrs = known_users[initials]
     user, created = user_model.objects.get_or_create(
         username = attrs ["username"],
@@ -33,13 +32,11 @@ def classify_user(user_model, initials):
             "is_staff": True,
             "is_active": True
     })
-    print(user)
     return user 
        
 def change_format(date):
     year, month, day = date.split('-')
     dt = datetime(int(year), int(month), int(day), tzinfo=ZoneInfo("America/New_York"))
-    print(dt)
     return dt
 
 def split_notes(apps, schema_editor):
@@ -48,9 +45,7 @@ def split_notes(apps, schema_editor):
     user_model = apps.get_model('auth', 'user')
     
     for group in group_model.objects.all():
-        print(group)
         for old_note in group.notes.split("; "):
-            print(old_note)
             if match := re.match(r'(\w\w) (\d\d\d\d-\d\d-\d\d): (.*)', old_note):
                 user_initials = match[1]
                 date = match[2]
@@ -70,7 +65,6 @@ def split_notes(apps, schema_editor):
             else:
                 continue
         
-            print("made it this far")
             timestamp = change_format(date)
             user = classify_user(user_model, user_initials)
             note = note_model(
