@@ -83,7 +83,7 @@ class SingleGroupView(LoginRequiredMixin, DetailView):
 
 class EditGroupView(LoginRequiredMixin, UpdateView):
     model = Group
-    fields = ['key', 'name', 'description', 'notes', 'export']
+    fields = ['key', 'name', 'description', 'export']
     template_name = 'ui/edit_group.html'
 
     def get_success_url(self):
@@ -98,7 +98,7 @@ class EditGroupView(LoginRequiredMixin, UpdateView):
 
 class CreateGroupView(LoginRequiredMixin, CreateView):
     model = Group
-    fields = ['key', 'name', 'description', 'notes', 'export']
+    fields = ['key', 'name', 'description', 'export']
     template_name = 'ui/new_group.html'
 
     def get_success_url(self):
@@ -142,6 +142,12 @@ class CreateNoteView(LoginRequiredMixin, CreateView):
         current_group = Group.objects.filter(key=self.kwargs.get('key')).first()
         context.update(group=current_group)
         return context
+    
+class DeleteNoteView(LoginRequiredMixin, DeleteView):
+    model = Note
+
+    def get_success_url(self):
+        return reverse('single_group', args=[self.object.group.key])
 
 class CreateIPRangeView(LoginRequiredMixin, CreateView):
     form_class = IPRangeForm
