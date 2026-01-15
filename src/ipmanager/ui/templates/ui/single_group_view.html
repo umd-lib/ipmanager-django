@@ -73,6 +73,17 @@
         <td>{{ note.created|date:"F j, Y"}} {{ note.created|time:"g:i:sA" }}</td>
         <td>{{note.user}}</td>
         <td>{{note.content}}</td>
+        <td>{{note.value}}</td>
+        <td>
+          <form
+            method="post"
+            class="no-margin"
+            action="{% url 'delete_note' group.key note.pk %}"
+          >
+            {% csrf_token %}
+            <button type="submit" class="delete">Delete</button>
+          </form>
+        </td>
       </tr>
       {% endfor %}
     </tbody>
