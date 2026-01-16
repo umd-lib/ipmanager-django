@@ -1,7 +1,9 @@
 {% extends 'ui/base.html' %}
 {% block content %}
 {% include 'ui/test_ip_form.html' %}
+{% if is_superuser %}
 <a class="button create" href='{% url "create_group"%}'>New Group</a>
+{% endif %}
 {% if group_list %}
 
   <table class="lined margin-top--small">
@@ -40,3 +42,10 @@
   <p>No groups found. Please create a group using "New Group".</p>
 {% endif %}
 {% endblock %}
+
+{% if user.is_superuser %}
+    <a href="{% url 'api:group-create' %}" class="btn btn-primary">
+        New Group
+    </a>
+{% endif %}
+

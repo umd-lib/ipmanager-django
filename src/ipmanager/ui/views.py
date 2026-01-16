@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpRequest
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import View
@@ -7,6 +7,7 @@ from django.views.generic.edit import CreateView, DeleteView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ipmanager.api.models import Group, IPRange, Relation, Note
 from ipmanager.ui.forms import IPRangeForm, RelationForm, TestIPForm, NoteForm
+
 
 class SuperUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
@@ -48,6 +49,7 @@ class GroupListView(LoginRequiredMixin, ListView):
         context.update(
             form=TestIPForm,
             test_ip=self.request.GET.get('test_ip', ''),
+            is_superuser=self.request.user.is_superuser
         )
         return context
 
@@ -82,8 +84,8 @@ class SingleGroupView(LoginRequiredMixin, DetailView):
             form=TestIPForm,
             contained=contained,
             test_ip=test_ip,
+            is_superuser=self.request.user.is_superuser
         )
-
         return context
 
 class EditGroupView(LoginRequiredMixin, SuperUserRequiredMixin, UpdateView):
