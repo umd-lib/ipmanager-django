@@ -4,9 +4,15 @@ from django.urls import reverse
 from django.views import View
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ipmanager.api.models import Group, IPRange, Relation, Note
 from ipmanager.ui.forms import IPRangeForm, RelationForm, TestIPForm, NoteForm
+
+class SuperUserRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_superuser  
+    raise_exception = False
+    login_url_url = 'login'  # Redirect to login page if not authorized
 
 class RootView(TemplateView):
     template_name = 'ui/login_required.html'
@@ -80,13 +86,12 @@ class SingleGroupView(LoginRequiredMixin, DetailView):
 
         return context
 
-
-class EditGroupView(LoginRequiredMixin, UpdateView):
+class EditGroupView(LoginRequiredMixin, SuperUserRequiredMixin, UpdateView):
     model = Group
     fields = ['key', 'name', 'description', 'export']
     template_name = 'ui/edit_group.html'
 
-    def get_success_url(self):
+    def get_success_url(self):  
         return reverse('single_group', args=[self.object.key])
 
     def get_context_data(self, **kwargs):
@@ -95,23 +100,21 @@ class EditGroupView(LoginRequiredMixin, UpdateView):
         context.update(group=current_group)
         return context
 
-
-class CreateGroupView(LoginRequiredMixin, CreateView):
+class CreateGroupView(LoginRequiredMixin, SuperUserRequiredMixin, CreateView):
     model = Group
     fields = ['key', 'name', 'description', 'export']
     template_name = 'ui/new_group.html'
 
     def get_success_url(self):
         return reverse('single_group', args=[self.object.key])
-
-class DeleteGroupView(LoginRequiredMixin, DeleteView):
+    
+class DeleteGroupView(LoginRequiredMixin, SuperUserRequiredMixin, DeleteView):
     model = Group
 
     def get_success_url(self):
-        return reverse('list_all_groups')
+        return reverse('list_all_groups') 
 
-
-class CreateRelationView(LoginRequiredMixin, CreateView):
+class CreateRelationView(LoginRequiredMixin, SuperUserRequiredMixin, CreateView):
     form_class = RelationForm
     template_name = 'ui/create_relation_form.html'
 
@@ -123,14 +126,13 @@ class CreateRelationView(LoginRequiredMixin, CreateView):
         context.update(group=Group.objects.filter(key=self.kwargs.get('key')).first())
         return context
 
-
-class DeleteRelationView(LoginRequiredMixin, DeleteView):
+class DeleteRelationView(LoginRequiredMixin, SuperUserRequiredMixin, DeleteView):
     model = Relation
 
     def get_success_url(self):
         return reverse('single_group', args=[self.object.subject.key])
-
-class CreateNoteView(LoginRequiredMixin, CreateView):
+    
+class CreateNoteView(LoginRequiredMixin, SuperUserRequiredMixin, CreateView):
     form_class = NoteForm
     template_name = 'ui/add_note_form.html'
 
@@ -143,13 +145,13 @@ class CreateNoteView(LoginRequiredMixin, CreateView):
         context.update(group=current_group)
         return context
     
-class DeleteNoteView(LoginRequiredMixin, DeleteView):
+class DeleteNoteView(LoginRequiredMixin, SuperUserRequiredMixin, DeleteView):
     model = Note
 
     def get_success_url(self):
         return reverse('single_group', args=[self.object.group.key])
-
-class CreateIPRangeView(LoginRequiredMixin, CreateView):
+    
+class CreateIPRangeView(LoginRequiredMixin, SuperUserRequiredMixin, CreateView):
     form_class = IPRangeForm
     template_name = 'ui/add_ip_range_form.html'
 
@@ -162,8 +164,7 @@ class CreateIPRangeView(LoginRequiredMixin, CreateView):
         context.update(group=current_group)
         return context
 
-
-class DeleteIPRangeView(LoginRequiredMixin, DeleteView):
+class DeleteIPRangeView(LoginRequiredMixin, SuperUserRequiredMixin, DeleteView):
     model = IPRange
 
     def get_success_url(self):
