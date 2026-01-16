@@ -3,17 +3,21 @@
   <div class="horizontal-container horizontal-container--space-between">
     <h1>{{group.name}} ({{group.key}})</h1>
     <div class="horizontal-container">
+      {% if is_superuser %}
       <a class="button create" href='{% url "create_group"%}'
         >New Group</a
       >
+
       <form
         method="post"
         action="{% url 'delete_group' group.pk %}"
         class="no-margin"
       >
         {% csrf_token %}
+        
         <button type="delete" class="delete">Delete</button>
       </form>
+      {% endif %}
     </div>
   </div>
   {% include 'ui/test_ip_form.html' %}
@@ -58,11 +62,13 @@
     </table>
   </div>
 
+  {% if is_superuser %}
   <a
     href='{% url "edit_group" group.pk %}'
     class="button edit"
     >Edit Group</a
   >
+  {% endif %}
 
   <h2>Notes</h2>
 
@@ -74,21 +80,25 @@
         <td>{{note.user}}</td>
         <td>{{note.content}}</td>
         <td>{{note.value}}</td>
+        {% if is_superuser %}
         <td>
           <form
             method="post"
             class="no-margin"
             action="{% url 'delete_note' group.key note.pk %}"
           >
+          
             {% csrf_token %}
             <button type="submit" class="delete">Delete</button>
           </form>
         </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
+  {% if is_superuser %}
   <form method="post" action="{% url 'create_note' group.key %}">
     {% csrf_token %}
     <div class="horizontal-container">
@@ -96,6 +106,7 @@
       <button type="submit" class="create">Add Note</button>
     </div>
   </form>
+  {% endif %}
 
   <h2>IP Ranges</h2>
 
@@ -104,6 +115,7 @@
       {% for iprange in ip_ranges %}
       <tr>
         <td>{{iprange.value}}</td>
+        {% if request.user.is_superuser %}
         <td>
           <form
             method="post"
@@ -114,11 +126,13 @@
             <button type="submit" class="delete">Delete</button>
           </form>
         </td>
+        {% endif %}
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
+  {% if is_superuser %}
   <form method="post" action="{% url 'create_new_ip_range' group.key %}">
     {% csrf_token %}
     <div class="horizontal-container">
@@ -126,6 +140,7 @@
       <button type="submit" class="create">Add IP Range</button>
     </div>
   </form>
+  {% endif %}
 
   <h2>Child Groups</h2>
   <div class="horizontal-container-even horizontal-container-even--2">
@@ -153,6 +168,7 @@
       <tr>
         <td>
           {{exc_groups.object.key}} - {{exc_groups.object.name}}
+          {% if is_superuser %}
           <form
             method="post"
             action="{% url 'delete_relation' group.key exc_groups.pk %}"
@@ -160,12 +176,14 @@
             {% csrf_token %}
             <button type="delete">Delete</button>
           </form>
+          {% endif %}
         </td>
       </tr>
       {% endfor %}
     </table>
   </div>
 
+  {% if is_superuser %}
   <form method="post" action="{% url 'relation' group.key %}">
     {% csrf_token %} {{ relation_form.subject }}
     <div class="square-grid">
@@ -178,5 +196,6 @@
       Add Child Group
     </button>
   </form>
+  {% endif %}
 </div>
 {% endblock %}
