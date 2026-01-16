@@ -13,17 +13,7 @@ class ModifiedSaml2Backend(Saml2Backend):
         assertion_info: dict,
         **kwargs,
     ) -> bool:
-        return 'ipmanager-administrator' in group_names(attributes)
-    
-    def is_user(
-        self,
-        attributes: dict,
-        attribute_mapping: dict,
-        idp_entityid: str,
-        assertion_info: dict,
-        **kwargs,
-    ) -> bool:
-        return 'ipmanager-user' in group_names(attributes)
+            return 'ipmanager-administrator' in group_names(attributes) or 'ipmanager-user' in group_names(attributes)
     
     def _update_user(self, user, attributes: dict, attribute_mapping: dict, force_save: bool = False):
         groups = group_names(attributes)
