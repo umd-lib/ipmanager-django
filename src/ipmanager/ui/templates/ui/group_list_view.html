@@ -43,7 +43,7 @@
 {% endif %}
 {% endblock %}
 
-{% if user.is_superuser %}
+{% if is_superuser %}
     <a href="{% url 'api:group-create' %}" class="btn btn-primary">
         New Group
     </a>
