@@ -76,7 +76,7 @@ class Command(BaseCommand):
         file_path = Path(options["file_path"])
         kind = options["kind"]
 
-        self.stdout.write("File path is:", file_path)
+        self.stdout.write(f"File path is: {file_path}")
 
         if not file_path.exists():
             raise CommandError(f"File not found: {file_path}")
@@ -90,10 +90,10 @@ class Command(BaseCommand):
 
         fixture_objects = self.convert_csv(file_path, converter)
         for obj in fixture_objects:
-            self.stdout.write(obj)
-            self.stdout.write(self.style.SUCCESS(f"Successfully processed row: {converter}"))
+            self.stdout.write(str(obj))
+            self.stdout.write(self.style.SUCCESS(f"Successfully processed row with {converter.__name__}"))
 
-        
+
         output_file = options['output']
         with output_file.open("w", encoding="utf-8") as out_file:
             import json
@@ -107,8 +107,7 @@ class Command(BaseCommand):
         with file_path.open(newline='', encoding='utf-8') as data:
             reader = csv.DictReader(data)
             for row in reader:
-                self.stdout.write(row)
+                self.stdout.write(str(row))
                 fixture_obj = converter(row)
                 objects.append(fixture_obj)
             return objects
-            
