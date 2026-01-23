@@ -15,7 +15,7 @@
       >
         {% csrf_token %}
         
-          <button type="submit" class="delete" onclick ="return confirm ('Are you sure you want to remove this group?');">Remove</button>      
+          <button type="submit" class="delete" onclick="return confirm ('Are you sure you want to remove this group?');">Remove</button>      
         </form>
       {% endif %}
     </div>
@@ -137,7 +137,7 @@
     {% csrf_token %}
     <div class="horizontal-container">
       {{ ip_range_form }}
-      <button type="submit" class="create">Add IP Range</button>
+      <button type="delete" class="create">Add IP Range</button>
     </div>
   </form>
   {% endif %}
@@ -174,7 +174,7 @@
             action="{% url 'delete_relation' group.key exc_groups.pk %}"
           >
             {% csrf_token %}
-            <button type="delete" onclick = "return confirm ('Are you sure you want to remove this group?');">Remove</button>
+            <button type="submit" class = "delete" onclick = "return confirm ('Are you sure you want to remove this group?');">Remove</button>
           </form>
           {% endif %}
         </td>
