@@ -36,7 +36,7 @@ class GroupListView(LoginRequiredMixin, ListView):
     template_name = 'ui/group_list_view.html'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by('key')
         test_ip = self.request.GET.get('test_ip', '')
         if test_ip:
             for group in queryset:
