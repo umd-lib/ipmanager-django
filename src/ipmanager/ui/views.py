@@ -13,7 +13,7 @@ class SuperUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser  
     raise_exception = False
-    login_url_url = 'login'  # Redirect to login page if not authorized
+    login_url = 'login'  # Redirect to login page if not authorized
 
 class RootView(TemplateView):
     template_name = 'ui/login_required.html'
@@ -92,7 +92,7 @@ class DepartmentRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_in_department
     raise_exception = False
-    login_url_url = 'login'
+    login_url = 'login'
 
 class EditGroupView(LoginRequiredMixin, SuperUserRequiredMixin, UpdateView, DepartmentRequiredMixin):
     model = Group
@@ -155,7 +155,7 @@ class CreateNoteView(LoginRequiredMixin, SuperUserRequiredMixin, CreateView,Depa
     
 class DeleteNoteView(LoginRequiredMixin, SuperUserRequiredMixin, DeleteView,DepartmentRequiredMixin):
     model = Note
-
+    template_name = 'ui/single_group_view.html'
     def get_success_url(self):
         return reverse('single_group', args=[self.object.group.key])
     

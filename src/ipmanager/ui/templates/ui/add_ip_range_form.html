@@ -6,7 +6,7 @@
   {{ form.group }}
   {{ form.value }}
   <button type="submit" class="create">Add IP Range</button>
-  <a class="button delete" href="{% url 'single_group' group.key %}">Cancel</a>
+  <a class="button delete" href="{% url 'single_group_view' group.key %}">Cancel</a>
 </form>
 
 {% endblock %}

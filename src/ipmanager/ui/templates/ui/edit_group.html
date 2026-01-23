@@ -29,7 +29,7 @@
 
 <div class="horizontal-container">
   <button type="submit" class="edit">Update Group</button>
-  <a class="button delete" href='{% url "single_group" group.key %}'>Cancel</a>
+  <a class="button delete" href='{% url "single_group" group.key %}' onclick= "return confirm ('Are you sure you want to delete this group?')">Cancel</a>
   <a class="button delete" href='{% url "list_all_groups" %}'>Home</a>
 </div>
 
