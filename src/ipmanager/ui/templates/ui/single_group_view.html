@@ -15,12 +15,25 @@
       >
         {% csrf_token %}
         
-        <button type="delete" class="delete">Delete</button>
-      </form>
+          <button type="submit" class="delete" onclick="return confirm ('Are you sure you want to remove this group?');">Remove</button>      
+        </form>
       {% endif %}
     </div>
   </div>
   {% include 'ui/test_ip_form.html' %}
+
+  {% if test_ip %}
+    <tr>
+      <th>Group Contains IP?</th>
+      <td>
+        {% if contained %}
+          True ✅
+        {% else %}
+          False ❌
+        {% endif %}
+      </td>
+    </tr>
+  {% endif %}
 
   <h2>Group Information</h2>
   <div>
@@ -52,12 +65,6 @@
           </td>
           {% endif %}
         </tr>
-        {% if test_ip %}
-        <tr>
-          <th>Group Contains IP?</th>
-          <td>{{contained}}</td>
-        </tr>
-        {% endif %}
       </tbody>
     </table>
   </div>
@@ -89,7 +96,7 @@
           >
           
             {% csrf_token %}
-            <button type="submit" class="delete">Delete</button>
+            <button type="submit" class="delete" onclick = "return confirm ('Are you sure you want to remove this note.');">Remove</button>
           </form>
         </td>
         {% endif %}
@@ -99,13 +106,16 @@
   </table>
 
   {% if is_superuser %}
-  <form method="post" action="{% url 'create_note' group.key %}">
-    {% csrf_token %}
-    <div class="horizontal-container">
-      {{ note_form }}
-      <button type="submit" class="create">Add Note</button>
-    </div>
-  </form>
+    <form 
+      method="post" 
+      action="{% url 'create_note' group.key %}"
+      >
+      {% csrf_token %}
+      <div class="horizontal-container">
+        {{ note_form }}
+        <button type="submit" class="create">Add Note</button>
+      </div>
+    </form>
   {% endif %}
 
   <h2>IP Ranges</h2>
@@ -115,7 +125,7 @@
       {% for iprange in ip_ranges %}
       <tr>
         <td>{{iprange.value}}</td>
-        {% if request.is_superuser %}
+        {% if is_superuser %}
         <td>
           <form
             method="post"
@@ -123,7 +133,7 @@
             action="{% url 'delete_ip_range' group.key iprange.pk %}"
           >
             {% csrf_token %}
-            <button type="submit" class="delete">Delete</button>
+            <button type="submit" class="delete" onclick = "return confirm ('Are you sure you want to remove this ip range?');">Remove</button>
           </form>
         </td>
         {% endif %}
@@ -137,7 +147,7 @@
     {% csrf_token %}
     <div class="horizontal-container">
       {{ ip_range_form }}
-      <button type="submit" class="create">Add IP Range</button>
+      <button type="delete" class="create">Add IP Range</button>
     </div>
   </form>
   {% endif %}
@@ -149,13 +159,13 @@
       {% for inc_groups in included_groups %}
       <tr>
         <td>
-          {{inc_groups.object.key}} - {{inc_groups.object.name}}
+          {{inc_groups.object.key}} - <a href = "{%url 'single_group' inc_groups.object.key%}">{{inc_groups.object.name}}</a>
           <form
             method="post"
             action="{% url 'delete_relation' group.key inc_groups.pk %}"
           >
             {% csrf_token %}
-            <button class="delete" type="delete">Delete</button>
+            <button class="delete" type="delete" onclick = "return confirm ('Are you sure you want to remove this group?');">Remove</button>
           </form>
         </td>
       </tr>
@@ -167,14 +177,14 @@
       {% for exc_groups in excluded_groups %}
       <tr>
         <td>
-          {{exc_groups.object.key}} - {{exc_groups.object.name}}
+          {{exc_groups.object.key}} - <a href = "{%url 'single_group' exc_groups.object.key%}">{{exc_groups.object.name}}</a>
           {% if is_superuser %}
           <form
             method="post"
             action="{% url 'delete_relation' group.key exc_groups.pk %}"
           >
             {% csrf_token %}
-            <button type="delete">Delete</button>
+            <button type="submit" class = "delete" onclick = "return confirm ('Are you sure you want to remove this group?');">Remove</button>
           </form>
           {% endif %}
         </td>
