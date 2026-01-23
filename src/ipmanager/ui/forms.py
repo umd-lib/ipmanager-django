@@ -1,4 +1,4 @@
-from django.forms import CharField, Form, HiddenInput, ModelForm
+from django.forms import CharField, Form, HiddenInput, ModelForm, Textarea
 
 from ipmanager.api.models import IPRange, Relation, Note
 
@@ -18,6 +18,7 @@ class NoteForm(ModelForm):
         widgets = {
             'user': HiddenInput(),
             'group': HiddenInput(),
+            'content': Textarea(attrs={'cols': 60, 'rows': 2})
         }
 
 
