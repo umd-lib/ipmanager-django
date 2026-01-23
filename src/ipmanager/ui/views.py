@@ -47,7 +47,7 @@ class GroupListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'All Groups'
         context.update(
-            form=TestIPForm,
+            form=TestIPForm(self.request.GET or None),
             test_ip=self.request.GET.get('test_ip', ''),
             is_superuser=self.request.user.is_superuser
         )
@@ -81,7 +81,7 @@ class SingleGroupView(LoginRequiredMixin, DetailView):
             notes=Note.objects.filter(group=current_group),
             ip_range_form=IPRangeForm(initial={'group': current_group}),
             note_form = NoteForm(initial={'user': self.request.user, 'group': current_group}),
-            form=TestIPForm,
+            form=TestIPForm(self.request.GET or None),
             contained=contained,
             test_ip=test_ip,
             is_superuser=self.request.user.is_superuser
