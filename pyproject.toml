@@ -10,6 +10,11 @@ authors = [
     { name="Aatish Gupta", email="aatish@umd.edu" },
     { name="Mackenzie Kilgore", email="mkilgore@umd.edu" },
     { name="Dorian Mkam", email="dmkam@umd.edu" },
+    # 2026 Sprinterns
+    { name="Akyra Alston", email="aalstron6@umd.edu" },
+    { name="Malaika Asif", email="masif@umd.edu" },
+    { name="Hannah Gorski", email="hggorski@umd.edu" },
+    { name="Aanchal Puri", email="aanchal@umd.edu" },
 ]
 version = "1.0.0-dev"
 dependencies = [

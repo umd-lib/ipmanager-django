@@ -13,7 +13,7 @@ class SuperUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser  
     raise_exception = False
-    login_url_url = 'login'  # Redirect to login page if not authorized
+    login_url = 'login'  # Redirect to login page if not authorized
 
 class RootView(TemplateView):
     template_name = 'ui/login_required.html'
@@ -36,7 +36,7 @@ class GroupListView(LoginRequiredMixin, ListView):
     template_name = 'ui/group_list_view.html'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().order_by('key')
         test_ip = self.request.GET.get('test_ip', '')
         if test_ip:
             for group in queryset:

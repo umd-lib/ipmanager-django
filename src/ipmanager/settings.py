@@ -49,7 +49,7 @@ runserver.default_port = SERVER_PORT
 
 DOMAIN_NAME = env.str('DOMAIN_NAME', 'ipmanager-local')
 
-ALLOWED_HOSTS = [BASE_URL.hostname, '0.0.0.0']
+ALLOWED_HOSTS = [BASE_URL.hostname, *env.list('OTHER_ALLOWED_HOSTS', default=[])]
 
 # Add the IP address (used by k8s health probes)
 try:
@@ -59,6 +59,7 @@ except OSError:
     # ignore if we can't get the IP address
     pass
 
+PROJECT_PACKAGE_NAME = 'ipmanager-django'
 APPLICATION_NAME = 'IP Manager'
 NAVIGATION_LINKS = 'ipmanager.urls.get_navigation_links'
 ENVIRONMENT = env.str('ENVIRONMENT', 'development')
