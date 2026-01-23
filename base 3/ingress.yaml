@@ -1,0 +1,62 @@
+# Ingress
+# Ingress routing configuration for the Nginx Ingress controller
+# This takes the place of the reverse proxy server
+
+# Ingress configuration to expose autonumber services to internet
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: autonumber-ingress
+
+  labels:
+    app.kubernetes.io/instance: autonumber
+
+  # See all available annotations:
+  #  https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/
+  annotations:
+    # Let's Encrypt certificate provisioning
+    # Use "letsencrypt-staging" as the cluster-issuer if you will testing
+    # multiple issues of certificates
+    cert-manager.io/cluster-issuer: "letsencrypt"
+
+    # Only allow on-campus, or VPN access
+    nginx.ingress.kubernetes.io/whitelist-source-range: 10.0.0.0/8,128.8.0.0/16,129.2.0.0/16
+
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - <domain_name>
+      secretName: <domain_name>-tls-secret
+  rules:
+    - host: <domain_name>
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: autonumber-app
+                port:
+                  number: 3000
+          - path: /favicon.ico
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: autonumber-static-files
+                port:
+                  number: 80
+          - path: /robots.txt
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: autonumber-static-files
+                port:
+                  number: 80
+          - path: /sitemap.xml
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: autonumber-static-files
+                port:
+                  number: 80

@@ -1,0 +1,57 @@
+# Configuration that are not env specific.
+# If your app needs configuration files/variables that will be same across
+# the test, qa, and the prod environments, they can defined here.
+#
+# For environment specific configuration, they need to be added to the
+# overlay kustomization file using the configMapGenerator option.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ipmanager-common-config
+data:
+  # Send Rails logs to standard out
+  RAILS_LOG_TO_STDOUT: "true"
+
+  # The Rails environment to use.
+  RAILS_ENV: "production"
+
+  # Comment out if Rails application assets are being served directly by the
+  # web server, instead of Puma
+  RAILS_SERVE_STATIC_FILES: "true"
+
+  # --- config/database.yml
+  # The type of database
+  PROD_DATABASE_ADAPTER: "postgresql"
+
+  # The name of the database
+  PROD_DATABASE_NAME: "ipmanager"
+
+  # The encoding to use
+  PROD_DATABASE_ENCODING: "utf8"
+
+  # The username used to connect to the database
+  PROD_DATABASE_USERNAME: "ipmanager"
+
+  # The port for the database
+  PROD_DATABASE_PORT: "5432"
+
+  # Pool size
+  PROD_DATABASE_POOL: "10"
+---
+# Initialization script for populating the "handle" database
+apiVersion: v1
+data:
+  init-database.sh: |
+    #!/bin/bash
+
+    if [ -e /pgdata/dumpfile.sql ]; then
+      echo "restoring ipmanager database from a backup file"
+      psql --username "$POSTGRES_USER" </pgdata/dumpfile.sql
+    elif psql -lqt | cut -d \| -f 1 | grep -qw ipmanager; then
+      echo "ipmanager database already exists."
+    else
+      echo "No dump file found or existing database."
+    fi
+kind: ConfigMap
+metadata:
+  name: init-ipmanager-database

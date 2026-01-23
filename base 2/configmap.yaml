@@ -1,0 +1,38 @@
+# Configuration that are not env specific.
+# If your app needs configuration files/variables that will be same across
+# the test, qa, and the prod environments, they can defined here.
+#
+# For environment specific configuration, they need to be added to the
+# overlay kustomization file using the configMapGenerator option.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: autonumber-common-config
+data:
+  DB_ENGINE: django.db.backends.postgresql
+  DB_HOST: autonumber-db
+  DB_PORT: "5432"
+  DB_NAME: autonumber
+  K8S_INTERNAL_HOST: autonumber-app
+  SESSION_COOKIE_SECURE: 'True'
+---
+# Initialization script for populating the "autonumber" database
+apiVersion: v1
+data:
+  autonumber.init: |
+    CREATE DATABASE autonumber;
+  init-database.sh: |
+    #!/bin/bash
+
+    if [ -e /pgdata/dumpfile.sql ]; then
+      echo "restoring autonumber database from a backup file"
+      psql --username "$POSTGRES_USER" </pgdata/dumpfile.sql
+    elif psql -lqt | cut -d \| -f 1 | grep -qw autonumber; then
+      echo "autonumber database already exists."
+    else
+      echo "creating empty autonumber database..."
+      psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" < "/docker-entrypoint-initdb.d/autonumber.init"
+    fi
+kind: ConfigMap
+metadata:
+  name: init-autonumber-database

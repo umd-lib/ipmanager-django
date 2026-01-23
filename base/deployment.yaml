@@ -1,0 +1,197 @@
+# ipmanager Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ipmanager-app
+  labels:
+    app: ipmanager-app
+    app.kubernetes.io/instance: ipmanager
+    app.kubernetes.io/name: ipmanager
+    app.kubernetes.io/component: app
+  annotations:
+    kube-score/ignore: deployment-replicas
+spec:
+  # Configure replication factor for the pod, if more than one
+  replicas: 1
+
+  # To link the pod to deployment
+  selector:
+    matchLabels:
+      app: ipmanager-app
+
+  template:
+    # Metadata for the Pod template
+    metadata:
+      # Labels for the pod
+      labels:
+        app: ipmanager-app
+        app.kubernetes.io/instance: ipmanager
+        app.kubernetes.io/name: ipmanager
+        app.kubernetes.io/component: app
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      initContainers:
+        - name: check-ipmanager-db
+          image: busybox:1.28
+          command: ['sh', '-c', 'until nslookup ipmanager-db; do echo
+                    "Waiting for ipmanager-db to come up"; sleep 3; done; echo
+                    "ipmanager-db is up."']
+          resources:
+            # Minimum necessary to schedule the pod to a node
+            requests:
+              memory: "128Mi"
+              cpu: "20m"
+              ephemeral-storage: "64Mi"
+            # Max allowed
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+              ephemeral-storage: "64Mi"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+      # Container Configuration
+      containers:
+        - image: docker.lib.umd.edu/ipmanager:1.0.0
+          name: ipmanager
+          # Resource configuration
+          resources:
+            # Minimum necessary to schedule the pod to a node
+            requests:
+              memory: "1024Mi"
+              cpu: "20m"
+              ephemeral-storage: "64Mi"
+            # Max allowed
+            limits:
+              memory: "4096Mi"
+              cpu: "1000m"
+              ephemeral-storage: "64Mi"
+          env:
+            - name: PROD_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ipmanager-common-env-secret
+                  key: POSTGRES_PASSWORD
+          # The secret is from prod/test/qa secret env file
+          envFrom:
+            - configMapRef:
+                name: ipmanager-common-config
+            - configMapRef:
+                name: ipmanager-env-config
+            - secretRef:
+                name: ipmanager-common-env-secret
+          # Ports to open on a container
+          ports:
+            - containerPort: 3001
+              name: http
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+          # For verifying liveness and readiness status of containers
+          # See https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 3001
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+            periodSeconds: 120
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - ls -l /proc/*/exe | grep ruby
+            initialDelaySeconds: 60
+            periodSeconds: 120
+            timeoutSeconds: 5
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ipmanager-static-files
+  labels:
+    app: ipmanager-static-files
+    app.kubernetes.io/instance: ipmanager
+    app.kubernetes.io/name: static-files
+    app.kubernetes.io/component: static-files
+spec:
+  # Configure replication factor for the pod, if more than one
+  replicas: 2
+
+  # To link the pod to deployment
+  selector:
+    matchLabels:
+      app: ipmanager-static-files
+
+  template:
+    # Metadata for the Pod template
+    metadata:
+      # Labels for the pod
+      labels:
+        app: ipmanager-static-files
+        app.kubernetes.io/instance: ipmanager
+        app.kubernetes.io/name: static-files
+        app.kubernetes.io/component: static-files
+    spec:
+      affinity:
+        podAntiAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - ipmanager-static-files
+              topologyKey: "kubernetes.io/hostname"
+      imagePullSecrets:
+        - name: regcred
+      # Container Configuration
+      containers:
+        - image: docker.lib.umd.edu/umd-web-static-files:1.0.0
+          name: ipmanager-static-files
+          # Resource configuration
+          resources:
+            # Minimum necessary to schedule the pod to a node
+            requests:
+              memory: "128Mi"
+              cpu: "20m"
+              ephemeral-storage: "64Mi"
+            # Max allowed
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+              ephemeral-storage: "64Mi"
+          # Ports to open on a container
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - ls -l /proc/*/exe | grep nginx
+
+            initialDelaySeconds: 10
+            periodSeconds: 120
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /robots.txt
+              port: 80
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+            periodSeconds: 10

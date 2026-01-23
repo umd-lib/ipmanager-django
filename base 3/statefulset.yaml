@@ -1,0 +1,231 @@
+# autonumber
+# Statefulsets - Deployments with persistent volumes
+# This is the main configuration that deploys the pods
+
+# Postgres Statefulset
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: autonumber-db
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/instance: autonumber
+spec:
+  replicas: 1
+  serviceName: autonumber-db
+  selector:
+    matchLabels:
+      app: autonumber-db
+  volumeClaimTemplates: []
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+        app.kubernetes.io/component: database
+        app.kubernetes.io/instance: autonumber
+        app: autonumber-db
+    spec:
+      volumes:
+        - name: "pgdata-vol"
+          persistentVolumeClaim:
+            claimName: autonumber-db-pvc
+        - name: postgres-var-run
+          emptyDir:
+            sizeLimit: "16Mi"
+        - name: postgres-initdb
+          configMap:
+            name: init-autonumber-database
+        - name: backup-user-script
+          configMap:
+            name: logical-backup-user-provisioning-script-pg
+            defaultMode: 0774
+      # Container Configuration
+      containers:
+        - image: postgres:9.5.16
+          name: postgres
+          resources:
+            # Minimum necessary to schedule the pod to a node
+            requests:
+              memory: "1024Mi"
+              cpu: "20m"
+              ephemeral-storage: "64Mi"
+            # Max allowed
+            limits:
+              memory: "4096Mi"
+              cpu: "1000m"
+              ephemeral-storage: "64Mi"
+          envFrom:
+            - configMapRef:
+                name: autonumber-db-env-config
+            - secretRef:
+                name: autonumber-common-env-secret
+          ports:
+            - containerPort: 5432
+              name: psql
+              protocol: TCP
+          volumeMounts:
+            - mountPath: "/pgdata"
+              name: "pgdata-vol"
+            - mountPath: /var/run/postgresql
+              name: postgres-var-run
+            - mountPath: /docker-entrypoint-initdb.d
+              name: postgres-initdb
+            - mountPath: /tmp
+              name: postgres-var-run
+          securityContext:
+            allowPrivilegeEscalation: false
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "autonumber", "-d", "autonumber", "-q"]
+            initialDelaySeconds: 10
+            periodSeconds: 60
+            timeoutSeconds: 2
+          livenessProbe:
+            exec:
+              command: ["psql", "-U", "autonumber", "-d", "autonumber", "-c", "SELECT 1"]
+            initialDelaySeconds: 10
+            periodSeconds: 60
+            timeoutSeconds: 2
+      initContainers:
+        # Sidecar container to ensure the PostgreSQL backup account is provisioned
+        - name: provision-backup-user
+          image: postgres:9.5.16
+          restartPolicy: Always # Required for sidecar
+          command:
+            - "/bin/sh"
+            - "-c"
+            - |
+              set -e
+
+              # Set the environment variables PG expects, even though most stacks
+              # use POSTGRES_PASSWORD instead of PGPASSWORD
+              if [ -z "${PGPASSWORD}" ]; then
+                export PGPASSWORD="${POSTGRES_PASSWORD}"
+              fi
+
+              while ! pg_isready -h 127.0.0.1 -U "${POSTGRES_USER}" -d postgres >/dev/null 2>&1; do
+                echo "Waiting for PostgreSQL to be ready..."
+                sleep 5
+              done
+              echo "Running backup provisioner script..."
+              ./logical-backups/provisioning/backup-user-script.sh
+              # If the sidecar exits, it will cause the pod to be
+              # marked as NotReady
+              echo "Sleeping forever to keep sidecar alive..."
+              tail -f /dev/null
+          envFrom:
+            - secretRef:
+                name: autonumber-common-env-secret
+            - secretRef:
+                name: shared-db-backup-secret
+          volumeMounts:
+            - name: backup-user-script
+              mountPath: /logical-backups/provisioning
+          resources:
+            requests:
+              memory: 100Mi
+              cpu: 100m
+            limits:
+              memory: 100Mi
+              cpu: 100m
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: autonumber-app
+  labels:
+    app: autonumber-app
+    app.kubernetes.io/instance: autonumber
+    app.kubernetes.io/name: app
+    app.kubernetes.io/component: autonumber-app
+  annotations:
+    kube-score/ignore: "pod-probes, deployment-replicas"
+spec:
+  serviceName: autonumber-app-service
+  replicas: 1
+  selector:
+    matchLabels:
+      app: autonumber-app
+
+  template:
+    # Metadata for the Pod template
+    metadata:
+      # Labels for the pod
+      labels:
+        app.kubernetes.io/instance: autonumber
+        app.kubernetes.io/name: app
+        app.kubernetes.io/component: autonumber-app
+        app: autonumber-app
+    spec:
+      volumes:
+      - name: tmp-vol
+        emptyDir: {}
+      imagePullSecrets:
+        - name: regcred
+      # Container Configuration
+      containers:
+      - image: docker.lib.umd.edu/autonumber-django:VERSION_SET_IN_OVERLAY
+        name: autonumber
+        command: ["bash"]
+        args:
+          - -c
+          - python src/manage.py migrate && autonumber
+        # Resource configuration
+        resources:
+          # Minimum necessary to schedule the pod to a node
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+            ephemeral-storage: "2Gi"
+          # Max allowed
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+            ephemeral-storage: "4Gi"
+        env:
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: autonumber-common-env-secret
+                key: POSTGRES_USER
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: autonumber-common-env-secret
+                key: POSTGRES_PASSWORD
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: autonumber-common-env-secret
+                key: SECRET_KEY_BASE
+        envFrom:
+          - configMapRef:
+              name: autonumber-common-config
+          - configMapRef:
+              name: autonumber-env-config
+          - secretRef:
+              name: autonumber-common-env-secret
+        volumeMounts:
+        # Directory for copying temporary files into the pod
+        - name: tmp-vol
+          mountPath: /tmp
+
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 15
+          timeoutSeconds: 5
+          periodSeconds: 120
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 60
+          periodSeconds: 120
+          timeoutSeconds: 5

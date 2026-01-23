@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: autonumber-static-files
+  labels:
+    app: autonumber-static-files
+    app.kubernetes.io/instance: autonumber
+    app.kubernetes.io/name: static-files
+    app.kubernetes.io/component: static-files
+spec:
+  # Configure replication factor for the pod, if more than one
+  replicas: 1
+
+  # To link the pod to deployment
+  selector:
+    matchLabels:
+      app: autonumber-static-files
+
+  template:
+    # Metadata for the Pod template
+    metadata:
+      # Labels for the pod
+      labels:
+        app: autonumber-static-files
+        app.kubernetes.io/instance: autonumber
+        app.kubernetes.io/name: static-files
+        app.kubernetes.io/component: static-files
+      annotations:
+        kube-score/ignore: "pod-probes, deployment-replicas"
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      # Container Configuration
+      containers:
+        - image: docker.lib.umd.edu/umd-web-static-files:1.0.0
+          name: autonumber-static-files
+          # Resource configuration
+          resources:
+            # Minimum necessary to schedule the pod to a node
+            requests:
+              memory: "128Mi"
+              cpu: "20m"
+              ephemeral-storage: "64Mi"
+            # Max allowed
+            limits:
+              memory: "512Mi"
+              cpu: "1000m"
+              ephemeral-storage: "64Mi"
+          # Ports to open on a container
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          securityContext:
+            allowPrivilegeEscalation: false
+          # Using robots.txt to verify liveness
+          livenessProbe:
+            httpGet:
+              path: /robots.txt
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 120
+            timeoutSeconds: 5

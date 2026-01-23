@@ -1,0 +1,65 @@
+# Network policy
+# This is the network policy for ipmanager application.
+
+# Allow all traffic between ipmanager pods (including cronjob pods). As long
+# as the pods have the label `part-of: ipmanager`, this policy applies.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ipmanager-allow-all-interpod
+spec:
+  podSelector:
+    matchLabels:
+      part-of: ipmanager
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              part-of: ipmanager
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              part-of: ipmanager
+---
+# Allow external HTTP traffic (ingress) to ipmanager-app pod, and allow
+# the ipmanager-app pod to access any HTTP/HTTPS endpoint
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ipmanager-allow-external-http-to-ipmanager
+spec:
+  podSelector:
+    matchLabels:
+      app: ipmanager-app
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from: []
+      ports:
+        - port: 3001
+  egress:
+    - to: []
+      ports:
+        - port: 80
+        - port: 443
+---
+# Allow external HTTP traffic (ingress) to ipmanager-static-files pod
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ipmanager-allow-external-http-to-static-files
+spec:
+  podSelector:
+    matchLabels:
+      app: ipmanager-static-files
+  policyTypes:
+    - Ingress
+  ingress:
+    - from: []
+      ports:
+        - port: 80

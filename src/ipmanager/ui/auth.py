@@ -15,20 +15,4 @@ class ModifiedSaml2Backend(Saml2Backend):
     ) -> bool:
             return 'ipmanager-administrator' in group_names(attributes) or 'ipmanager-user' in group_names(attributes)
     
-    def _update_user(self, user, attributes: dict, attribute_mapping: dict, force_save: bool = False):
-        groups = group_names(attributes)
-
-        if 'ipmanager-administrator' in groups:
-            user.is_staff = True
-            user.is_superuser = True
-            user.is_active = True
-        elif 'ipmanager-user' in groups:
-            user.is_staff = False
-            user.is_superuser = False
-            user.is_active = True
-        else:
-            user.is_staff = False
-            user.is_superuser = False
-            user.is_active = False
-
-        return super()._update_user(user, attributes, attribute_mapping, force_save=True)
+    

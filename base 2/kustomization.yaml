@@ -1,0 +1,13 @@
+# Base Kustomization YAML
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# The resources to include in kustomization
+resources:
+  - configmap.yaml
+  - deployment.yaml
+  - ingress.yaml
+  - networkpolicy.yaml
+  - service.yaml
+  - statefulset.yaml
+  - db-backup.yaml

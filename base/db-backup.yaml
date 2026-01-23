@@ -1,0 +1,158 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ipmanager-allow-ingress-for-backup
+  labels:
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: ipmanager
+    part-of: ipmanager
+  annotations:
+    description: "Allow PostgreSQL access from the logical backup job"
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: database
+      part-of: ipmanager
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: backup
+              part-of: ipmanager
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: ipmanager-allow-psql-from-logical-backup-job
+  labels:
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: ipmanager
+    part-of: ipmanager
+  annotations:
+    description: "Allow PostgreSQL access from the logical backup job"
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: backup
+      part-of: ipmanager
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: database
+              part-of: ipmanager
+      ports:
+        - protocol: TCP
+          port: 5432
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: ipmanager-db-backup
+  annotations:
+    description: "Logical backup of PostgreSQL database"
+  labels:
+    app.kubernetes.io/component: backup
+    app.kubernetes.io/part-of: ipmanager
+    part-of: ipmanager
+spec:
+  suspend: false
+  schedule: "@midnight"
+  timeZone: "America/New_York"
+  startingDeadlineSeconds: 72000 # skip if job is not started within 20 hours
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 6
+      activeDeadlineSeconds: 3600 # 1 hour
+      ttlSecondsAfterFinished: 172800 # 48 hours
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/component: backup
+            app.kubernetes.io/part-of: ipmanager
+            part-of: ipmanager
+        spec:
+          restartPolicy: OnFailure
+          imagePullSecrets:
+            - name: regcred
+          containers:
+            - name: logical-backup
+              image: postgres:14.2
+              command: ["/logical-backups/scripts/backup-script.sh"]
+              # You must set the following variables in env or envFrom:
+              # PGHOST (the service name of the PostgreSQL database)
+              #
+              # The following variables are automatically set by the Downward API:
+              # POD_NAMESPACE
+              # PART_OF (requires that you set the part-of label on the job)
+              env:
+                - name: POD_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.namespace
+                - name: PART_OF
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.labels['part-of']
+                - name: PGHOST
+                  value: ipmanager-db
+              envFrom:
+                - secretRef:
+                    name: shared-db-backup-secret
+              volumeMounts:
+                - name: backup-script
+                  mountPath: /logical-backups/scripts
+                - name: logical-backups
+                  mountPath: /logical-backups/data
+              resources:
+                # If pg_dump can read data faster than it can write it, memory
+                # usage will be the bottleneck. It is good to tweak the
+                # request.memory based on usage.
+                requests:
+                  memory: "512Mi"
+                  cpu: "1"
+                  ephemeral-storage: "256Mi"
+                limits:
+                  memory: "2Gi"
+                  cpu: "2"
+                  ephemeral-storage: "256Mi"
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+          volumes:
+            - name: backup-script
+              configMap:
+                name: logical-backup-script-pg # replace this if you need customization
+                defaultMode: 0744
+            - name: logical-backups
+              persistentVolumeClaim:
+                claimName: logical-backups-pvc # this PVC is shared by all stacks as RWX
+          # We *prefer* to run the backup job on the same node as the database
+          # for performance reasons, but we don't require it.
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    labelSelector:
+                      matchExpressions:
+                        - key: part-of
+                          operator: In
+                          values:
+                            - ipmanager
+                        - key: app.kubernetes.io/component
+                          operator: In
+                          values:
+                            - database
+                    topologyKey: "kubernetes.io/hostname"

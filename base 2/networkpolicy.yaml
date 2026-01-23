@@ -1,0 +1,65 @@
+# Network policy
+# This is the network policy for autonumber application.
+
+# Allow all traffic between autonumber pods (including cronjob pods). As long
+# as the pods have the label `part-of: autonumber`, this policy applies.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: autonumber-allow-all-interpod
+spec:
+  podSelector:
+    matchLabels:
+      part-of: autonumber
+  policyTypes:
+    - Ingress
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              part-of: autonumber
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              part-of: autonumber
+---
+# Allow external HTTP traffic (ingress) to autonumber-app pod, and allow
+# the autonumber-app pod to access any HTTP/HTTPS endpoint
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: autonumber-allow-external-http-to-autonumber
+spec:
+  podSelector:
+    matchLabels:
+      app: autonumber-app
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from: []
+      ports:
+        - port: 3000
+  egress:
+    - to: []
+      ports:
+        - port: 80
+        - port: 443
+---
+# Allow external HTTP traffic (ingress) to autonumber-static-files pod
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: autonumber-allow-external-http-to-static-files
+spec:
+  podSelector:
+    matchLabels:
+      app: autonumber-static-files
+  policyTypes:
+    - Ingress
+  ingress:
+    - from: []
+      ports:
+        - port: 80

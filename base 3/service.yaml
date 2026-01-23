@@ -1,0 +1,48 @@
+# Service Configuration
+# To allow service discovery between the application and database pods
+# Also, service are the only way to make these pods talk to each other, and
+# to the internet (via ingress) in case of the app.
+
+# Postgres Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: autonumber-db
+spec:
+  clusterIP: None
+  selector:
+    app: autonumber-db
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+---
+# autonumber application
+apiVersion: v1
+kind: Service
+metadata:
+  name: autonumber-app
+spec:
+  clusterIP: None
+  selector:
+    app: autonumber-app
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      name: http
+---
+# autonumber static files
+apiVersion: v1
+kind: Service
+metadata:
+  name: autonumber-static-files
+spec:
+  clusterIP: None
+  selector:
+    app: autonumber-static-files
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      name: http
