@@ -152,7 +152,7 @@
       {% for inc_groups in included_groups %}
       <tr>
         <td>
-          {{inc_groups.object.key}} - {{inc_groups.object.name}}
+          {{inc_groups.object.key}} - <a href = "{%url 'single_group' inc_groups.object.key%}">{{inc_groups.object.name}}</a>
           <form
             method="post"
             action="{% url 'delete_relation' group.key inc_groups.pk %}"
@@ -170,7 +170,7 @@
       {% for exc_groups in excluded_groups %}
       <tr>
         <td>
-          {{exc_groups.object.key}} - {{exc_groups.object.name}}
+          {{exc_groups.object.key}} - <a href = "{%url 'single_group' exc_groups.object.key%}">{{exc_groups.object.name}}</a>
           {% if is_superuser %}
           <form
             method="post"
