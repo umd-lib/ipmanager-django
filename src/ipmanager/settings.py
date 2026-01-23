@@ -59,6 +59,7 @@ except OSError:
     # ignore if we can't get the IP address
     pass
 
+PROJECT_PACKAGE_NAME = 'ipmanager-django'
 APPLICATION_NAME = 'IP Manager'
 NAVIGATION_LINKS = 'ipmanager.urls.get_navigation_links'
 ENVIRONMENT = env.str('ENVIRONMENT', 'development')
