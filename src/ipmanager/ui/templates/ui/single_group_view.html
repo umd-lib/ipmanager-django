@@ -99,13 +99,16 @@
   </table>
 
   {% if is_superuser %}
-  <form method="post" action="{% url 'create_note' group.key %}">
-    {% csrf_token %}
-    <div class="horizontal-container">
-      {{ note_form }}
-      <button type="submit" class="create">Add Note</button>
-    </div>
-  </form>
+    <form 
+      method="post" 
+      action="{% url 'create_note' group.key %}"
+      >
+      {% csrf_token %}
+      <div class="horizontal-container">
+        {{ note_form }}
+        <button type="submit" class="create">Add Note</button>
+      </div>
+    </form>
   {% endif %}
 
   <h2>IP Ranges</h2>
