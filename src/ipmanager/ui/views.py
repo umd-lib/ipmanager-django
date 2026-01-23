@@ -13,7 +13,7 @@ class SuperUserRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser  
     raise_exception = False
-    login_url_url = 'login'  # Redirect to login page if not authorized
+    login_url = 'login'  # Redirect to login page if not authorized
 
 class RootView(TemplateView):
     template_name = 'ui/login_required.html'
