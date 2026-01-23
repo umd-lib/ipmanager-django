@@ -1,11 +1,18 @@
-from django.urls import path
-
+from django.urls import path, reverse
+from . import views
 from .views import (CreateGroupView, CreateIPRangeView, CreateRelationView, DeleteGroupView,
                     DeleteIPRangeView, DeleteRelationView, EditGroupView, GroupListView, RootView,
                     SingleGroupView, CreateNoteView, DeleteNoteView)
 
+def get_navigation_links(request):
+    return [
+        {'label': 'Home', 'url': reverse('index')},
+        {'label': 'Groups', 'url': reverse('list_all_groups')},
+    ]
+
 urlpatterns = [
     path('groups', GroupListView.as_view(), name='list_all_groups'),
+    
     path('groups/create',
          CreateGroupView.as_view(), name='create_group'),
     path('groups/<str:key>',
@@ -43,4 +50,6 @@ urlpatterns = [
         DeleteIPRangeView.as_view(),
         name='delete_ip_range',
     ),
+    path('', RootView.as_view(), name='ipmanager_root'),
+    
 ]
