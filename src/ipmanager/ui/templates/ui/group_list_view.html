@@ -30,7 +30,13 @@
           </td>
           <td>{{ group.description }}</td>
           {% if test_ip %} 
-            <td>{{group.contained}}</td>
+            <td>
+              {% if group.contained %}
+                True ✅
+              {% else %}
+                False ❌
+              {% endif %}
+            </td>
           {% endif %}
         </tr>
       {% empty %}

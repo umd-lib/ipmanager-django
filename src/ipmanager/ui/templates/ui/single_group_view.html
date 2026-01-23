@@ -22,6 +22,19 @@
   </div>
   {% include 'ui/test_ip_form.html' %}
 
+  {% if test_ip %}
+    <tr>
+      <th>Group Contains IP?</th>
+      <td>
+        {% if contained %}
+          True ✅
+        {% else %}
+          False ❌
+        {% endif %}
+      </td>
+    </tr>
+  {% endif %}
+
   <h2>Group Information</h2>
   <div>
     <table class="lined expanded">
@@ -52,12 +65,6 @@
           </td>
           {% endif %}
         </tr>
-        {% if test_ip %}
-        <tr>
-          <th>Group Contains IP?</th>
-          <td>{{contained}}</td>
-        </tr>
-        {% endif %}
       </tbody>
     </table>
   </div>
