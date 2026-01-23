@@ -115,7 +115,7 @@
       {% for iprange in ip_ranges %}
       <tr>
         <td>{{iprange.value}}</td>
-        {% if request.is_superuser %}
+        {% if is_superuser %}
         <td>
           <form
             method="post"
