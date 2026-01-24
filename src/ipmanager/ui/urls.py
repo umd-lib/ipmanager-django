@@ -1,20 +1,25 @@
 from django.urls import path
 
-from .views import (CreateGroupView, CreateIPRangeView, CreateRelationView, DeleteGroupView,
-                    DeleteIPRangeView, DeleteRelationView, EditGroupView, GroupListView, RootView,
-                    SingleGroupView, CreateNoteView, DeleteNoteView)
+from .views import (
+    CreateGroupView,
+    CreateIPRangeView,
+    CreateNoteView,
+    CreateRelationView,
+    DeleteGroupView,
+    DeleteIPRangeView,
+    DeleteNoteView,
+    DeleteRelationView,
+    EditGroupView,
+    GroupListView,
+    SingleGroupView,
+)
 
 urlpatterns = [
     path('groups', GroupListView.as_view(), name='list_all_groups'),
-    path('groups/create',
-         CreateGroupView.as_view(), name='create_group'),
-    path('groups/<str:key>',
-         SingleGroupView.as_view(), name='single_group'),
-    path('groups/<int:pk>/edit',
-         EditGroupView.as_view(), name='edit_group'),
-    path(
-        'groups/<int:pk>/delete', DeleteGroupView.as_view(), name='delete_group'
-    ),
+    path('groups/create', CreateGroupView.as_view(), name='create_group'),
+    path('groups/<str:key>', SingleGroupView.as_view(), name='single_group'),
+    path('groups/<int:pk>/edit', EditGroupView.as_view(), name='edit_group'),
+    path('groups/<int:pk>/delete', DeleteGroupView.as_view(), name='delete_group'),
     path(
         'groups/<str:key>/relation/create',
         CreateRelationView.as_view(),
@@ -25,13 +30,11 @@ urlpatterns = [
         DeleteRelationView.as_view(),
         name='delete_relation',
     ),
-    path('groups/<str:key>/notes',
-         CreateNoteView.as_view(),
-         name='create_note'
-    ),
-    path('groups/<str:key>/notes/<int:pk>/delete/', 
-        DeleteNoteView.as_view(), 
-        name='delete_note'
+    path('groups/<str:key>/notes', CreateNoteView.as_view(), name='create_note'),
+    path(
+        'groups/<str:key>/notes/<int:pk>/delete/',
+        DeleteNoteView.as_view(),
+        name='delete_note',
     ),
     path(
         'groups/<str:key>/ip_ranges',

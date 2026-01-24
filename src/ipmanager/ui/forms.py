@@ -1,6 +1,7 @@
 from django.forms import CharField, Form, HiddenInput, ModelForm, Textarea
 
-from ipmanager.api.models import IPRange, Relation, Note
+from ipmanager.api.models import IPRange, Note, Relation
+
 
 class RelationForm(ModelForm):
     class Meta:
@@ -18,7 +19,7 @@ class NoteForm(ModelForm):
         widgets = {
             'user': HiddenInput(),
             'group': HiddenInput(),
-            'content': Textarea(attrs={'cols': 60, 'rows': 2})
+            'content': Textarea(attrs={'cols': 60, 'rows': 2}),
         }
 
 
@@ -32,4 +33,4 @@ class IPRangeForm(ModelForm):
 
 
 class TestIPForm(Form):
-    test_ip = CharField(max_length=32, label="Test IP")
+    test_ip = CharField(max_length=32, label='Test IP')
