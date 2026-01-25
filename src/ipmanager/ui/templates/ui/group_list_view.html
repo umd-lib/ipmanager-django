@@ -1,18 +1,21 @@
 {% extends 'ui/base.html' %}
 {% block content %}
 {% include 'ui/test_ip_form.html' %}
-{% if is_superuser %}
-<a class="button create" href='{% url "create_group"%}'>New Group</a>
-{% endif %}
-{% if group_list %}
 
-  <table class="lined margin-top--small">
+{% if is_superuser %}
+<div class="controls">
+  <a class="button create" href='{% url "create_group"%}'>New Group…</a>
+</div>
+{% endif %}
+
+{% if group_list %}
+  <table class="lined">
     <thead>
       <th>Key</th>
       <th>Name</th>
       <th>Exported?</th>
       <th>Description</th>
-      {% if test_ip %} 
+      {% if test_ip %}
       <th>IP in Group?</th>
       {% endif %}
     </thead>
@@ -22,14 +25,14 @@
           <th><a href='{% url "single_group" group.key %}'>{{ group.key }}</a></th>
           <td >{{ group.name }}</td>
           <td class="export_true">
-            {% if group.export %} 
+            {% if group.export %}
               {{"Yes"}}
             {% else %}
               {{"No"}}
             {% endif %}
           </td>
           <td>{{ group.description }}</td>
-          {% if test_ip %} 
+          {% if test_ip %}
             <td>
               {% if group.contained %}
                 True ✅
@@ -41,17 +44,16 @@
         </tr>
       {% empty %}
         <tr> <td>No groups yet. </td></tr>
-      {% endfor %}      
+      {% endfor %}
     </tbody>
   </table>
+  {% if is_superuser %}
+  <div class="controls">
+    <a class="button create" href='{% url "create_group"%}'>New Group…</a>
+  </div>
+  {% endif %}
 {% else %}
   <p>No groups found. Please create a group using "New Group".</p>
 {% endif %}
+
 {% endblock %}
-
-{% if is_superuser %}
-    <a href="{% url 'api:group-create' %}" class="btn btn-primary">
-        New Group
-    </a>
-{% endif %}
-

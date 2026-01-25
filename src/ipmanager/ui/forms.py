@@ -12,6 +12,14 @@ class RelationForm(ModelForm):
         }
 
 
+class InlineRelationForm(RelationForm):
+    class Meta(RelationForm.Meta):
+        widgets = {
+            'subject': HiddenInput(),
+            'relation': HiddenInput(),
+        }
+
+
 class NoteForm(ModelForm):
     class Meta:
         model = Note

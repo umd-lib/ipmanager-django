@@ -3,35 +3,33 @@
 
 <form method="post">
   {% csrf_token %}
-<h2>Editing Group</h2>
-<div>
-<table class="lined">
-  <tbody>
-    <tr">
-      <th>Key</th>
-      <td>{{ form.key }} {{ form.key.errors }} </td>
-    </tr>
-    <tr>
-      <th>Name</th>
-      <td>{{ form.name }} {{ form.name.errors }} </td>
-    </tr>
-    <tr>
-      <th>Description</th>
-      <td> {{ form.description }}</td>
-    </tr>
-    <tr>
-      <th>Export</th>
-      <td>{{ form.export }}</td>
-    </tr>
-  </tbody>
-</table>
-</div>
 
-<div class="horizontal-container">
-  <button type="submit" class="edit">Update Group</button>
-  <a class="button delete" href='{% url "single_group" group.key %}'>Cancel</a>
-  <a class="button delete" href='{% url "list_all_groups" %}'>Home</a>
-</div>
+  <table class="lined">
+    <tbody>
+      <tr">
+        <th>Key</th>
+        <td>{{ form.key }} {{ form.key.errors }} </td>
+      </tr>
+      <tr>
+        <th>Name</th>
+        <td>{{ form.name }} {{ form.name.errors }} </td>
+      </tr>
+      <tr>
+        <th>Description</th>
+        <td>{{ form.description }}</td>
+      </tr>
+      <tr>
+        <th>Export</th>
+        <td>{{ form.export }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="controls">
+    <button type="submit" class="edit">Update Group</button>
+    <a class="button delete" href='{% url "single_group" group.key %}'>Cancel</a>
+    <a class="button delete" href='{% url "list_all_groups" %}'>Home</a>
+  </div>
 
 </form>
 {% endblock %}

@@ -59,6 +59,19 @@ class Group(TimeStampedModel):
         # removes any excluded ip addresses from the union above
         return (internal + included) - excluded
 
+    @property
+    def inclusion_relations(self):
+        return Relation.objects.filter(subject=self, relation=Relation.RelationType.INCLUSION)
+
+    @property
+    def exclusion_relations(self):
+        return Relation.objects.filter(subject=self, relation=Relation.RelationType.EXCLUSION)
+
+    @property
+    def unrelated_groups(self):
+        """Groups that are not this group nor any of its directly related groups."""
+        return Group.objects.exclude(id__exact=self.id).exclude(id__in=Relation.objects.filter(subject=self).values('object'))
+
 
 def validate_ipv4_or_cidr_address(value):
     try:
@@ -111,6 +124,3 @@ class Note(TimeStampedModel):
 
     def __str__(self):
         return f'{self.created.strftime("%Y-%m-%d %H:%M:%S")} [{self.user.username}]: {self.content}'
-
-
-# we want this 2025-01-02T16:29:43Z

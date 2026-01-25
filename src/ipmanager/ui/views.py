@@ -7,7 +7,7 @@ from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, DeleteView, UpdateView
 
 from ipmanager.api.models import Group, IPRange, Note, Relation
-from ipmanager.ui.forms import IPRangeForm, NoteForm, RelationForm, TestIPForm
+from ipmanager.ui.forms import InlineRelationForm, IPRangeForm, NoteForm, RelationForm, TestIPForm
 
 
 class SuperUserRequiredMixin(UserPassesTestMixin):
@@ -50,8 +50,8 @@ class GroupListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'All Groups'
         context.update(
+            title='All Groups',
             form=TestIPForm(self.request.GET or None),
             test_ip=self.request.GET.get('test_ip', ''),
             is_superuser=self.request.user.is_superuser,
@@ -76,19 +76,24 @@ class SingleGroupView(LoginRequiredMixin, DetailView):
             contained = test_ip in current_group
 
         context.update(
-            relation_form=RelationForm(initial={'subject': self.object}),
+            title=f'{current_group.name} ({current_group.key})',
+            other_groups=current_group.unrelated_groups.order_by('key'),
+            included_groups={
+                'heading_text': 'Included Groups',
+                'relations': current_group.inclusion_relations.order_by('object__key'),
+                'form': InlineRelationForm(initial={'subject': current_group, 'relation': Relation.RelationType.INCLUSION}),
+                'button_text': 'Include Group',
+            },
+            excluded_groups={
+                'heading_text': 'Excluded Groups',
+                'relations': current_group.exclusion_relations.order_by('object__key'),
+                'form': InlineRelationForm(initial={'subject': current_group, 'relation': Relation.RelationType.EXCLUSION}),
+                'button_text': 'Exclude Group',
+            },
             ip_ranges=IPRange.objects.filter(group=current_group),
-            included_groups=Relation.objects.filter(
-                subject=current_group, relation=Relation.RelationType.INCLUSION
-            ),
-            excluded_groups=Relation.objects.filter(
-                subject=current_group, relation=Relation.RelationType.EXCLUSION
-            ),
             notes=Note.objects.filter(group=current_group),
             ip_range_form=IPRangeForm(initial={'group': current_group}),
-            note_form=NoteForm(
-                initial={'user': self.request.user, 'group': current_group}
-            ),
+            note_form=NoteForm(initial={'user': self.request.user, 'group': current_group}),
             form=TestIPForm(self.request.GET or None),
             contained=contained,
             test_ip=test_ip,
@@ -108,7 +113,10 @@ class EditGroupView(LoginRequiredMixin, SuperUserRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_group = Group.objects.filter(pk=self.object.pk).first()
-        context.update(group=current_group)
+        context.update(
+            title=f'Editing: {current_group.name} ({current_group.key})',
+            group=current_group,
+        )
         return context
 
 
