@@ -49,10 +49,18 @@ urlpatterns = [
 
 def get_navigation_links(request: HttpRequest):
     if request.user.is_authenticated:
-        return {
-            'admin:index': 'Admin',
+        links = {
+            'list_all_groups': 'All Groups',
+        }
+        if request.user.is_superuser:
+            links.update({
+                'admin:index': 'Admin',
+            })
+        links.update({
             '': f'Logged in as {request.user.username}',
             'saml2_logout': 'Log Out',
-        }
+        })
+        return links
+
     else:
         return {'saml2_login': 'Log In'}
