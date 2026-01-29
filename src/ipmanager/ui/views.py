@@ -91,7 +91,7 @@ class SingleGroupView(LoginRequiredMixin, DetailView):
                 'button_text': 'Exclude Group',
             },
             ip_ranges=IPRange.objects.filter(group=current_group),
-            notes=Note.objects.filter(group=current_group),
+            notes=Note.objects.filter(group=current_group).order_by('-created'),
             ip_range_form=IPRangeForm(initial={'group': current_group}),
             note_form=NoteForm(initial={'user': self.request.user, 'group': current_group}),
             form=TestIPForm(self.request.GET or None),
