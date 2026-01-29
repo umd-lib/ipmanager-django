@@ -9,12 +9,14 @@ from django.db.models import (
     CASCADE,
     BooleanField,
     CharField,
+    DateTimeField,
     ForeignKey,
     IntegerChoices,
     IntegerField,
     TextField,
     UniqueConstraint,
 )
+from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
 
 from ipmanager.core.cidr import Cidr, CidrSet
@@ -118,6 +120,8 @@ class Relation(TimeStampedModel):
 
 
 class Note(TimeStampedModel):
+    # override the TimeStampedModel.created field to default to the current date and time ONLY IF none is given
+    created = DateTimeField(default=timezone.now)
     user = ForeignKey(get_user_model(), on_delete=CASCADE)
     content = TextField()
     group = ForeignKey(Group, on_delete=CASCADE)
