@@ -77,6 +77,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'djangosaml2',
+    'health_check',
+    'health_check.contrib.psutil',
 ]
 
 MIDDLEWARE = [
