@@ -4,7 +4,7 @@ RUN apt-get update && \
     apt-get install -y xmlsec1 && \
     apt-get clean
 # ensure we have pip 25.1+ for PEP 735 dependency groups
-RUN pip install --upgrade pip
+RUN pip install --upgrade pip==25.1 setuptools==66.1.0
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
