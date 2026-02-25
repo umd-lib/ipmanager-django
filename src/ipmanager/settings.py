@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from socket import gethostbyname, gethostname
 
 import saml2.saml
 import saml2.xmldsig
@@ -18,8 +19,6 @@ from django.core.management.commands.runserver import Command as runserver
 from django.core.management.utils import get_random_secret_key
 from environ import Env
 from urlobject import URLObject
-
-from socket import gethostname, gethostbyname
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -30,7 +29,7 @@ STATIC_ROOT = str(BASE_DIR / 'staticfiles')
 Env.read_env(BASE_DIR / '.env')
 env = Env()
 
-BASE_URL = URLObject(env.str('BASE_URL', 'http://localhost:5000'))
+BASE_URL = URLObject(env.str('BASE_URL', 'http://ipmanager-local:3001'))
 CSRF_TRUSTED_ORIGINS = [str(BASE_URL.with_path(''))]
 
 # Quick-start development settings - unsuitable for production
@@ -43,7 +42,7 @@ SECRET_KEY = env('SECRET_KEY', default=get_random_secret_key())
 DEBUG = env.bool('DEBUG', False)
 
 SERVER_HOST = env.str('SERVER_HOST', '0.0.0.0')
-SERVER_PORT = env.str('SERVER_PORT', '3001')
+SERVER_PORT = env.int('SERVER_PORT', 3001)
 runserver.default_addr = SERVER_HOST
 runserver.default_port = SERVER_PORT
 
@@ -77,19 +76,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djangosaml2'
+    'djangosaml2',
+    'health_check',
+    'health_check.contrib.psutil',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'djangosaml2.middleware.SamlSessionMiddleware'
+    'djangosaml2.middleware.SamlSessionMiddleware',
 ]
 
 ROOT_URLCONF = 'ipmanager.urls'
@@ -130,7 +131,7 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'ipmanager.ui.auth.ModifiedSaml2Backend'
+    'ipmanager.ui.auth.ModifiedSaml2Backend',
 )
 
 LOGIN_URL = '/saml2/login'
@@ -200,8 +201,8 @@ LOGGING = {
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 STORAGES = {
     # Backend storage - compression and caching for WhiteNoise
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    'staticfiles': {
+        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     }
 }
 
@@ -238,17 +239,13 @@ SAML_CERT_FILE = env('SAML_CERT_FILE', default='/etc/ipmanager/saml/cert.pem')
 SAML_CONFIG = {
     # full path to the xmlsec1 binary program
     'xmlsec_binary': env('XMLSEC1_PATH', default='/usr/bin/xmlsec1'),
-
     # your entity id, usually your subdomain plus the url to the metadata view
     'entityid': str(BASE_URL.netloc),
-
     # directory with attribute mapping
     'attribute_map_dir': str(BASE_DIR / 'attribute-maps'),
-
     # Permits to have attributes not configured in attribute-mappings
     # otherwise...without OID will be rejected
     'allow_unknown_attributes': True,
-
     # this block states what services we provide
     'service': {
         'sp': {
@@ -266,32 +263,36 @@ SAML_CONFIG = {
                 # url and binding to the assertion consumer service view
                 # do not change the binding or service name
                 'assertion_consumer_service': [
-                    (str(BASE_URL.with_path('/users/auth/saml/callback')), saml2.BINDING_HTTP_POST),
+                    (
+                        str(BASE_URL.with_path('/users/auth/saml/callback')),
+                        saml2.BINDING_HTTP_POST,
+                    ),
                 ],
                 # url and binding to the single logout service view
                 # do not change the binding or service name
                 'single_logout_service': [
                     # Disable next two lines for HTTP_REDIRECT for IDPs that only support HTTP_POST. Ex. Okta:
-                    (str(BASE_URL.with_path('/saml2/ls/')), saml2.BINDING_HTTP_REDIRECT),
-                    (str(BASE_URL.with_path('/saml2/ls/post/')), saml2.BINDING_HTTP_POST),
+                    (
+                        str(BASE_URL.with_path('/saml2/ls/')),
+                        saml2.BINDING_HTTP_REDIRECT,
+                    ),
+                    (
+                        str(BASE_URL.with_path('/saml2/ls/post/')),
+                        saml2.BINDING_HTTP_POST,
+                    ),
                 ],
             },
             'signing_algorithm': saml2.xmldsig.SIG_RSA_SHA1,
             'digest_algorithm': saml2.xmldsig.DIGEST_SHA1,
-
             # Mandates that the identity provider MUST authenticate the
             # presenter directly rather than rely on a previous security context.
             'force_authn': False,
-
             # Enable AllowCreate in NameIDPolicy.
             'name_id_format_allow_create': False,
-
             # attributes that this project need to identify a user
             'required_attributes': ['mail', 'eduPersonEntitlement'],
-
             # attributes that may be useful to have but not required
             'optional_attributes': [],
-
             'want_response_signed': False,
             'authn_requests_signed': True,
             'logout_requests_signed': True,
@@ -299,21 +300,17 @@ SAML_CONFIG = {
             # be signed. If set to True, the SP will not consume
             # any SAML Responses that are not signed.
             'want_assertions_signed': True,
-
             'only_use_keys_in_metadata': True,
-
             # When set to true, the SP will consume unsolicited SAML
             # Responses, i.e. SAML Responses for which it has not sent
             # a respective SAML Authentication Request.
             'allow_unsolicited': True,
-
             # in this section the list of IdPs we talk to are defined
             # This is not mandatory! All the IdP available in the metadata will be considered instead.
             'idp': {
                 # we do not need a WAYF service since there is
                 # only an IdP defined here. This IdP should be
                 # present in our metadata
-
                 # the keys of this dictionary are entity ids
                 'https://shib.idm.umd.edu/shibboleth-idp/shibboleth': {
                     'single_sign_on_service': {
@@ -326,7 +323,6 @@ SAML_CONFIG = {
             },
         }
     },
-
     # where the remote metadata is stored, local, remote, or mdq server.
     # One metadata store or many...
     'metadata': {
@@ -334,16 +330,15 @@ SAML_CONFIG = {
             {'url': 'https://shib.idm.umd.edu/shibboleth-idp/shibboleth'},
         ],
     },
-
     'debug': 1,
-
     # Signing
     'key_file': SAML_KEY_FILE,
     'cert_file': SAML_CERT_FILE,
-
     # Encryption
-    'encryption_keypairs': [{
-        'key_file': SAML_KEY_FILE,
-        'cert_file': SAML_CERT_FILE,
-    }],
+    'encryption_keypairs': [
+        {
+            'key_file': SAML_KEY_FILE,
+            'cert_file': SAML_CERT_FILE,
+        }
+    ],
 }

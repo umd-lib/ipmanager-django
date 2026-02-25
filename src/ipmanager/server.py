@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 """Server startup script."""
+
 import click
 from waitress import serve
 
 from ipmanager.wsgi import application
+
 
 @click.command()
 @click.option(

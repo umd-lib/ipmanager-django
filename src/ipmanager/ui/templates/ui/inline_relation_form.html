@@ -1,0 +1,12 @@
+<form method="post" action="{% url 'relation' group.key %}" class="single-input">
+  {% csrf_token %}
+  {{ form.subject }}
+  {{ form.relation }}
+  <select name="object">
+    <option>---------</option>
+    {% for group in other_groups %}
+    <option value="{{ group.id }}">{{ group.key }} - {{ group.name }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="create">{{ button_text }}</button>
+</form>

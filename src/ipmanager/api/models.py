@@ -1,23 +1,25 @@
 # Create your models here.
 import re
 from ipaddress import IPv4Network
+
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db.models import (
     CASCADE,
     BooleanField,
     CharField,
+    DateTimeField,
     ForeignKey,
     IntegerChoices,
     IntegerField,
     TextField,
     UniqueConstraint,
 )
+from django.utils import timezone
 from django_extensions.db.models import TimeStampedModel
 
 from ipmanager.core.cidr import Cidr, CidrSet
-
-from django.contrib.auth import get_user_model
 
 
 class Group(TimeStampedModel):
@@ -58,6 +60,19 @@ class Group(TimeStampedModel):
         # combines group's own ip addresses and all of its included group's ipaddresses
         # removes any excluded ip addresses from the union above
         return (internal + included) - excluded
+
+    @property
+    def inclusion_relations(self):
+        return Relation.objects.filter(subject=self, relation=Relation.RelationType.INCLUSION)
+
+    @property
+    def exclusion_relations(self):
+        return Relation.objects.filter(subject=self, relation=Relation.RelationType.EXCLUSION)
+
+    @property
+    def unrelated_groups(self):
+        """Groups that are not this group nor any of its directly related groups."""
+        return Group.objects.exclude(id__exact=self.id).exclude(id__in=Relation.objects.filter(subject=self).values('object'))
 
 
 def validate_ipv4_or_cidr_address(value):
@@ -103,12 +118,13 @@ class Relation(TimeStampedModel):
     def __str__(self):
         return f'{self.subject} {"includes" if self.relation == Relation.RelationType.INCLUSION else "excludes"} {self.object}'
 
+
 class Note(TimeStampedModel):
+    # override the TimeStampedModel.created field to default to the current date and time ONLY IF none is given
+    created = DateTimeField(default=timezone.now)
     user = ForeignKey(get_user_model(), on_delete=CASCADE)
     content = TextField()
     group = ForeignKey(Group, on_delete=CASCADE)
 
     def __str__(self):
         return f'{self.created.strftime("%Y-%m-%d %H:%M:%S")} [{self.user.username}]: {self.content}'
-
-# we want this 2025-01-02T16:29:43Z

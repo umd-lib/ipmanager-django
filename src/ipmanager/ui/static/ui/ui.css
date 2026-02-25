@@ -1,60 +1,29 @@
-/* Single element modifiers */
-.expanded {
-  width: 100%;
+h2 {
+  margin-top: 1.5em;
+  margin-bottom: 0;
 }
 
-.no-margin {
-  margin: 0;
+/* Use for forms whose only visible input is a single submit button. */
+form.button {
+  display: inline;
 }
 
-.margin-top--small {
-  margin-top: .5em;
-}
-
-/* Element containers
-
-    Containers follow the BEM (Block Element Modifier) naming scheme.
-    block__element--modifier
-
-    These containers don't have 'element' subdivisions, because they only
-    contain one type of element within. Modifiers, however, are relevant because
-    we may want multiple variants of the same container.
-*/
-
-.flexible-width-container {
-  min-width: 20em;
-  max-width: 40em;
-}
-
-.horizontal-container {
-  margin-top: 0.5em;
+/* Use for forms with a single visible input and a submit button. */
+form.single-input {
   display: flex;
   flex-direction: row;
-  gap: 0.75em;
-  align-items: center;
+  gap: 0.5em;
+  align-items: start;
 }
 
-.horizontal-container--space-between {
-  justify-content: space-between;
-}
-
-.horizontal-container-even {
-  margin-top: .5em;
-  display: grid;
-  grid-template-rows: 1fr;
-  align-items: center;
-  gap: .75em;
-}
-
-.horizontal-container-even--2 {
-  grid-template-columns: 1fr 1fr;
-}
-
-.square-grid {
-  margin-top: .5em;
-  display: grid;
-  grid-template-columns: max-content max-content;
-  grid-template-rows: max-content max-content;
-  align-items: center;
-  gap: .75em;
+/*
+  Use for a collection of controls (usually buttons) that should be set
+  apart from the surrounding text.
+*/
+.controls {
+  margin: 1em 0;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5em;
+  align-items: start;
 }

@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Group, IPRange, Relation, Note
+
+from .models import Group, IPRange, Note, Relation
 
 
 class GroupAdmin(admin.ModelAdmin):

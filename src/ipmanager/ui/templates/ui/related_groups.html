@@ -1,0 +1,19 @@
+<h2>{{ related.heading_text }}</h2>
+<table class="lined">
+  {% if related.relations %}
+  <thead>
+    <tr>
+    <th>Key</th>
+    <th>Name</th>
+    <th></th>
+    </tr>
+  </thead>
+  {% endif %}
+  <tbody>
+    {% include 'ui/related_group_list_rows.html' with relations=related.relations %}
+  </tbody>
+</table>
+
+{% if is_superuser %}
+{% include 'ui/inline_relation_form.html' with form=related.form button_text=related.button_text %}
+{% endif %}
