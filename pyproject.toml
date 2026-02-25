@@ -16,7 +16,7 @@ authors = [
     { name="Hannah Gorski", email="hggorski@umd.edu" },
     { name="Aanchal Puri", email="aanchal@umd.edu" },
 ]
-version = "1.0.0-rc1"
+version = "1.0.0"
 dependencies = [
     "binarytree~=6.5",
     "click~=8.1",
