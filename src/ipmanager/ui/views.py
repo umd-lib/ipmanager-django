@@ -39,14 +39,24 @@ class HomeView(LoginRequiredMixin, View):
 class GroupListView(LoginRequiredMixin, ListView):
     model = Group
     template_name = 'ui/group_list_view.html'
+    # get_queryset() can return a plain list, which ListView cannot derive a
+    # context name from; name it explicitly so the template always has it.
+    context_object_name = 'group_list'
 
     def get_queryset(self):
         queryset = super().get_queryset().order_by('key')
         test_ip = self.request.GET.get('test_ip', '')
-        if test_ip:
-            for group in queryset:
-                group.contained = test_ip in group
-        return queryset
+        if not test_ip:
+            return queryset
+
+        groups = list(queryset)
+        for group in groups:
+            group.contained = test_ip in group
+
+        # Groups containing the IP sort first; list.sort is stable, so each
+        # block stays in key order.
+        groups.sort(key=lambda group: not group.contained)
+        return groups
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
