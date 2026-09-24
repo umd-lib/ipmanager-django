@@ -10,14 +10,12 @@ def test_valid_fields():
         key='aBCD123-',
         name='valid_group',
         description='Small Description',
-        notes='No Notes',
     )
 
     group.save()
     assert group.key == 'aBCD123-'
     assert group.name == 'valid_group'
     assert group.description == 'Small Description'
-    assert group.notes == 'No Notes'
     assert group.export is False
 
 
