@@ -1,8 +1,49 @@
 import re
 
-from binarytree import Node
-
 cidrPattern = re.compile(r'^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})(\/(\d{1,2}))?$')
+
+
+class Node:
+    """Represent a single binary tree node, providing just what CidrSet needs."""
+
+    def __init__(self, value, left=None, right=None):
+        self.value = value
+        self.left = left
+        self.right = right
+
+    def clone(self):
+        """Return a copy of the tree rooted at this node, sharing no nodes with it."""
+        return Node(
+            self.value,
+            None if self.left is None else self.left.clone(),
+            None if self.right is None else self.right.clone(),
+        )
+
+    def equals(self, other) -> bool:
+        """Test if the tree rooted at this node matches the one rooted at other,
+        in both values and structure.
+        """
+        if not isinstance(other, Node) or self.value != other.value:
+            return False
+
+        for child, other_child in ((self.left, other.left), (self.right, other.right)):
+            if child is None:
+                if other_child is not None:
+                    return False
+            elif not child.equals(other_child):
+                return False
+
+        return True
+
+    @property
+    def leaf_count(self) -> int:
+        """Return the number of nodes without children in the tree rooted here."""
+        if self.left is None and self.right is None:
+            return 1
+
+        return sum(
+            child.leaf_count for child in (self.left, self.right) if child is not None
+        )
 
 
 class Cidr:
