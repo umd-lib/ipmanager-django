@@ -47,6 +47,7 @@ ipmanager = "ipmanager.server:run"
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "ipmanager.settings"
+pythonpath = ["src"]
 filterwarnings = [
     # these warnings are coming from third-party code
     "ignore:pkg_resources is deprecated as an API.:DeprecationWarning",
